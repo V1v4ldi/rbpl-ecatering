@@ -10,4 +10,11 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    server:{
+        allowedHosts: true,
+        host: '127.0.0.1',
+        watch:{
+            usePolling: true
+        }
+    }
 });
