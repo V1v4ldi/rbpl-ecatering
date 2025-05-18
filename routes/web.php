@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Alluser;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
@@ -18,6 +19,7 @@ Route::post('/register', [RegisterController::class, 'store'])->name('register.s
 
 Route::get('/login', [LoginController::class, 'showlogin'])->name('login')->middleware('guest');
 Route::post('/login', [LoginController::class, 'checklogin'])->name('loggingin');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/dbtest', function () {
     return view('dbtest', ['title' => 'DB TEST']);
@@ -25,7 +27,7 @@ Route::get('/dbtest', function () {
 
 Route::get('/test', function () {
     return view('testing', ['title' => 'TEST', 'daftar' => 'true']);
-});
+})->name('test');
 
 /*
 Guest
@@ -48,3 +50,17 @@ Route::get('/recipt', function () {
 Route::get('/checkout', function () {
     return view('logged-in.cart', ['title' => 'E-Catering']);
 })->name('checkout');
+
+Route::get('/order', function () {
+    return view('logged-in.order', ['title' => 'E-Catering']);
+})->name('order');
+
+Route::get('/profile', [Alluser::class, 'customerprofile'])->name('cust.profile')->middleware('auth');
+/* 
+{{-- ADMIN ROUTE --}}
+*/
+Route::get('/admin/profile', [Alluser::class, 'adminprofile'])->name('admin.profile')->middleware('auth');
+/* 
+{{-- OWNER ROUTE --}}
+*/
+Route::get('/owner/profile', [Alluser::class, 'ownerprofile'])->name('owner.profile')->middleware('auth');
