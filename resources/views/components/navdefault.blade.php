@@ -1,6 +1,6 @@
-<nav class="fixed top-0 h-[75px] w-screen z-999999 bg-white lg:flex hidden">
+<nav class="fixed top-0 h-[80px] w-screen z-999999 bg-white lg:flex hidden">
     <div class="w-full flex px-[24px]">
-        <a href="/" class="space-x-3 flex items-center">
+        <a href="{{ route('homepage') }}" class="space-x-3 flex items-center">
             <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="" class="h-[50px]">
             <span class="self-center whitespace-nowrap text-3xl">E-Catering</span>
         </a>
@@ -42,11 +42,11 @@
 
 <!-- Mobile Navbar -->
 <nav class="fixed bottom-0 w-full bg-white shadow-md lg:hidden flex justify-around items-center h-[60px] z-50">
-    <a href="{{ route('homepage') }}" class="flex flex-col items-center text-gray-600 hover:text-[#FFA900] {{ request()->is('/') ? 'text-[#FFA900]' : '' }}">
+    <a href="{{ route('homepage') }}" class="flex flex-col items-center hover:text-[#FFA900] {{ request()->is('/') ? 'text-[#FFA900]' : 'text-gray-600' }}">
         <i class='bx bx-home text-2xl'></i>
         <span class="text-sm">Beranda</span>
     </a>
-    <a href="{{ route('catalog') }}" class="flex flex-col items-center text-gray-600 hover:text-[#FFA900] {{ request()->is('catalog') ? 'text-[#FFA900]' : '' }}">
+    <a href="{{ route('catalog') }}" class="flex flex-col items-center hover:text-[#FFA900] {{ request()->is('catalog') ? 'text-[#FFA900]' : 'text-gray-600' }}">
         <i class='bx bx-book text-2xl'></i>
         <span class="text-sm">Katalog</span>
     </a>
