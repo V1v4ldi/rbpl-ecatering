@@ -22,26 +22,22 @@
     @endphp
 
     {{-- Tidak tampil di halaman login/register --}}
-    {{-- @if (!in_array($routeName, ['login', 'register']))
-        @auth --}}
-            {{-- Jika sudah login --}}
-            {{-- @if (auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
-                <x-navadmin />
-                @elseif (auth()->user()->role === 'customer')
-                <x-navcustomer />
-                @elseif (in_array($routeName, 'test'))
-                <x-navadmin />
-                @endif
-                @else --}}
-                {{-- Untuk guest --}}
-                {{-- <x-navdefault />
-                @endauth
-                @endif --}}
-                
-                <x-navadmin />
+    @if (!in_array($routeName, ['login', 'register']))
+    @auth
+        {{-- Jika sudah login --}}
+        @if (auth()->user()->role === 'admin' || auth()->user()->role === 'owner')
+            <x-navadmin />
+        @elseif (auth()->user()->role === 'customer')
+            <x-navcustomer />
+        @endif
+    @else
+        {{-- Untuk guest --}}
+        <x-navdefault />
+    @endauth
+@endif
 </header>
 
-<body class="{{ $showNav ? 'lg:pt-[80px]' : 'pt-0'}} pt-[80px]">
+<body class="{{ $showNav ? 'lg:pt-[80px]' : 'pt-0'}}">
 
     <main>
         {{ $slot }}

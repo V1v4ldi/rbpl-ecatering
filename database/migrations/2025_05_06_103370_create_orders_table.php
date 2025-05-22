@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('order', function (Blueprint $table) {
             $table->string('order_id', length: 50)->primary();
-            $table->string('product_id', length: 50);
-            $table->string('customer_id', length: 50);
+            $table->string('product_id', length: 50)->nullable();
+            $table->string('customer_id', length: 50)->nullable();
             $table->foreign('product_id')->references('product_id')->on('product')->onDelete('cascade');
             $table->foreign('customer_id')->references('customer_id')->on('customer')->onDelete('cascade');
             $table->unsignedInteger('jumlah');

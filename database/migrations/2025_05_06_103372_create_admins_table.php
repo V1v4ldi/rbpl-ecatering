@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('nama', length: 50);
             $table->string('email', length: 100);
             $table->string('password');
-            $table->enum('role', ['customer','admin','owner']);
-            $table->string('order_id', length: 50);
+            $table->enum('role', ['customer','admin','owner'])->default('admin');
+            $table->string('order_id', length: 50)->nullable();
             $table->foreign('order_id')->references('order_id')->on('order');
             $table->timestamps();
         });

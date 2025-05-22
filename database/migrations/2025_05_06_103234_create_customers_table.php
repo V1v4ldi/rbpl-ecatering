@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email', length: 100)->unique();
             $table->string('password');
             $table->string('no_hp', length:15);
-            $table->enum('role', ['customer','admin','owner']);
+            $table->enum('role', ['customer','admin','owner'])->default('customer');
             $table->timestamps();
         });
     }

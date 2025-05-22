@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('email', length: 50);
             $table->string('password');
             $table->string('no_hp', length: 15);
-            $table->enum('role', ['customer','admin','owner']);
-            $table->string('report_id', length: 50);
+            $table->enum('role', ['customer','admin','owner'])->default('owner');
+            $table->string('report_id', length: 50)->nullable();
             $table->foreign('report_id')->references('report_id')->on('report');
             $table->timestamps();
         });

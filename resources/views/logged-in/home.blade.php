@@ -130,7 +130,6 @@
         <p class="text-lg mb-8 max-w-2xl mx-auto">Rasakan Layanan Catering Terbaik Kami. Kontak Kami Hari Ini dan Tingkatkan Pengalaman Makan Anda!</p>
         <a href="#" class="inline-block px-7 py-3 bg-orange-500 text-white font-semibold rounded-lg transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5">Pesan</a>
     </section>
-
     <script>
         // Cart functionality (for demo purposes)
         document.addEventListener('DOMContentLoaded', function() {

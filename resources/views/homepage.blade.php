@@ -13,18 +13,18 @@
     </section>
 
     <!-- Why Choose Us Section -->
-    <section class="text-center px-5 py-5 max-w-6xl mx-auto">
+    <section class="text-center px-5 py-5 max-w-6xl mx-auto mb-8">
         <h2 class="text-4xl font-bold mb-16">Kenapa Pilih Kami?</h2>
         <div class="flex justify-between gap-8 md:flex-row flex-col">
-            <div class="flex-1 text-center p-5">
+            <div class="flex-1 text-center p-5 shadow-lg border rounded-[6px] border-transparent">
                 <h3 class="text-[#FFA900] text-xl font-medium mb-4">Cepat & Praktis</h3>
                 <p class="text-gray-600">Pesan makanan dalam hitungan menit dan langsung dikirim ke lokasi kamu.</p>
             </div>
-            <div class="flex-1 text-center p-5">
+            <div class="flex-1 text-center p-5 shadow-lg border rounded-[6px] border-transparent">
                 <h3 class="text-[#FFA900] text-xl font-medium mb-4">Menu Variatif</h3>
                 <p class="text-gray-600">Pilih dari berbagai pilihan menu, dari tradisional sampai sehat kekinian.</p>
             </div>
-            <div class="flex-1 text-center p-5">
+            <div class="flex-1 text-center p-5 shadow-lg border rounded-[6px] border-transparent">
                 <h3 class="text-[#FFA900] text-xl font-medium mb-4">Harga Terjangkau</h3>
                 <p class="text-gray-600">Kualitas bintang lima dengan harga yang tetap bersahabat di kantong.</p>
             </div>

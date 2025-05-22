@@ -41,7 +41,7 @@
 </nav>
 
 <!-- Mobile Navbar -->
-<nav class="fixed bottom-0 w-full bg-white shadow-md lg:hidden flex justify-around items-center h-[60px] z-50">
+<nav class="fixed bottom-0 w-full bg-gray-50 shadow-md lg:hidden flex justify-around items-center h-[60px] z-50">
     <a href="{{ route('homepage') }}" class="flex flex-col items-center hover:text-[#FFA900] {{ request()->is('/') ? 'text-[#FFA900]' : 'text-gray-600' }}">
         <i class='bx bx-home text-2xl'></i>
         <span class="text-sm">Beranda</span>
