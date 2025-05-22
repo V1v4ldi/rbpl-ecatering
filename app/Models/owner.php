@@ -2,11 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use App\Http\Middleware\Authenticate;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class owner extends Model
+class owner extends Authenticatable
 {
     //
+    
+    protected $table = 'owner';
     protected $primaryKey = 'owner_id';
-    protected $guarded = ['owner_id'];
+    protected $fillable = [
+        'nama',
+        'email',
+        'password',
+        'no_hp',
+    ];
 }
