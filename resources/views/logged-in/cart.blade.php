@@ -3,7 +3,7 @@
         <h1 class="text-2xl mb-6 text-gray-800">Pesanan Saya</h1>
         
         <div class="flex border-b border-gray-200 mb-6">
-            <div class="px-4 py-3 cursor-pointer flex items-center gap-2 text-gray-600 border-b-2 border-blue-500 text-blue-500" data-tab="belum-bayar">
+            <div class="px-4 py-3 cursor-pointer flex items-center gap-2 text-gray-600 border-b-2 border-blue-500" data-tab="belum-bayar">
                 <span>🛒</span> Belum Bayar
             </div>
             <div class="px-4 py-3 cursor-pointer flex items-center gap-2 text-gray-600 border-b-2 border-transparent" data-tab="diproses">

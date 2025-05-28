@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('customer', function (Blueprint $table) {
-            $table->string('customer_id', length: 50)->primary();
-            $table->string('name', length: 50);
-            $table->string('email', length: 100)->unique();
+            $table->string('customer_id')->primary();
+            $table->string('name');
+            $table->string('email')->unique();
             $table->string('password');
             $table->string('no_hp', length:15);
-            $table->enum('role', ['customer','admin','owner'])->default('customer');
+            $table->enum('role', ['customer'])->default('customer');
             $table->timestamps();
         });
     }

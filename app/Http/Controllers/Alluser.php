@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -18,8 +19,9 @@ class Alluser extends Controller
 /*
         {{-- ADMIN CONTROLLER --}}
 */
-    public function adminhome(Request $request){
-        return view('admin.home', ['title' => 'Home Admin']);
+    public function adminhome(){
+        $products = product::paginate(8);
+        return view('admin.home', ['title' => 'Home Admin'], compact('products'));
     }
 
     public function adminprofile()

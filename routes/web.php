@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\product;
 use App\Http\Controllers\Alluser;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Menucontroller;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 
@@ -11,7 +13,8 @@ Route::get('/', function () {
 })->name('homepage')->middleware('guest');
 
 Route::get('/catalog', function () {
-    return view('catalog', ['title' => 'Catalog']);
+    $products = product::paginate(8);
+    return view('catalog', ['title' => 'Catalog'], compact('products'));
 })->name('catalog');
 
 Route::get('/register', [RegisterController::class, 'showregis'])->name('register')->middleware('guest');
@@ -36,8 +39,9 @@ Authed
 */
 
 Route::get('/home', function(){
-   return view('logged-in.home', ['title' => 'Home']); 
-})->name('home')->middleware('auth');
+    $products = product::paginate(8);
+   return view('logged-in.home', ['title' => 'Home'],compact('products')); 
+})->name('home')->middleware('auth:customer');
 
 Route::get('/payment', function () {
     return view('logged-in.payment', ['title' => 'Pembayaran']);
@@ -49,18 +53,22 @@ Route::get('/recipt', function () {
 
 Route::get('/checkout', function () {
     return view('logged-in.cart', ['title' => 'E-Catering']);
-})->name('checkout');
+})->name('checkout')->middleware('auth:customer');
 
 Route::get('/order', function () {
-    return view('logged-in.order', ['title' => 'E-Catering']);
-})->name('order');
+    $products = product::paginate(8);
+    return view('logged-in.order', ['title' => 'E-Catering'], compact('products'));
+})->name('order')->middleware('auth:customer');
 
-Route::get('/profile', [Alluser::class, 'customerprofile'])->name('cust.profile')->middleware('auth');
+Route::get('/profile', [Alluser::class, 'customerprofile'])->name('cust.profile')->middleware('auth:customer');
 /* 
 {{-- ADMIN ROUTE --}}
 */
-Route::get('/admin/profile', [Alluser::class, 'adminprofile'])->name('admin.profile')->middleware('auth');
+Route::get('/admin/home', [Alluser::class, 'adminhome'])->name('adminhome')->middleware('auth:admin');
+Route::resource('admin/menu', Menucontroller::class)->middleware('auth:admin');
+Route::get('/admin/profile', [Alluser::class, 'adminprofile'])->name('admin.profile')->middleware('auth:admin');
 /* 
 {{-- OWNER ROUTE --}}
 */
-Route::get('/owner/profile', [Alluser::class, 'ownerprofile'])->name('owner.profile')->middleware('auth');
+Route::get('/owner/home', [Alluser::class, 'ownerhome'])->name('ownerhome')->middleware('auth:owner');
+Route::get('/owner/profile', [Alluser::class, 'ownerprofile'])->name('owner.profile')->middleware('auth:owner');

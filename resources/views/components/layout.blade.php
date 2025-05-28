@@ -37,7 +37,7 @@
 @endif
 </header>
 
-<body class="{{ $showNav ? 'lg:pt-[80px]' : 'pt-0'}}">
+<body class="{{ $showNav ? 'lg:pt-[80px]' : 'pt-0'}}" >
 
     <main>
         {{ $slot }}

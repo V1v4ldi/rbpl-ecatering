@@ -81,7 +81,6 @@
                           <button @click = "icon = !icon"
                           type="button" 
                           class="absolute right-4 top-1/2 transform -translate-y-1/2 text-yellow-500 text-2xl font-semibold cursor-pointer"
-                          id="password-toggle"
                           >
                           <i x-bind:class="icon ? 'bx bx-show-alt' : 'bx bx-hide'"
                            class=''></i>

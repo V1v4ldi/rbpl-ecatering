@@ -12,13 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('admin', function (Blueprint $table) {
-            $table->string('admin_id', length: 50)->primary();
-            $table->string('nama', length: 50);
-            $table->string('email', length: 100);
+            $table->string('admin_id')->primary();
+            $table->string('name');
+            $table->string('email')->unique();
             $table->string('password');
-            $table->enum('role', ['customer','admin','owner'])->default('admin');
-            $table->string('order_id', length: 50)->nullable();
-            $table->foreign('order_id')->references('order_id')->on('order');
+            $table->string('no_hp');
+            $table->enum('role', ['admin'])->default('admin');
             $table->timestamps();
         });
     }
