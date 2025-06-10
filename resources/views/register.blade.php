@@ -2,7 +2,7 @@
     <x-slot:title>{{ $title }}</x-slot:title>
     <div class="min-h-screen w-full flex justify-center items-center bg-gray-100 relative">
         <!-- Background Food Image -->
-        <div class="absolute inset-0 z-0 bg-cover bg-center filter brightness-90" style="background-image: url('/api/placeholder/1600/900')"></div>
+        <div class="absolute inset-0 z-0 bg-cover bg-center filter brightness-90"></div>
 
          <!-- Registration Card -->
        <div class="w-full max-w-md bg-gray-50 rounded-xl shadow-lg p-8 z-10 mx-4 md:mx-0 relative lg:mb-0 mb-14">
@@ -71,7 +71,6 @@
                     <label for="password" class="block text-sm text-gray-600 mb-2">Password</label>
                     <div class="relative">
                         <input 
-                            x-bind
                             type="password" 
                             name="password" 
                             placeholder="••••••••" 

@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('cart_detail', function (Blueprint $table) {
             $table->string('cart_d_id')->primary();
-            $table->string('product_id');
+            $table->string('product_id')->nullable();
             $table->foreign('product_id')->references('product_id')->on('product')->onDelete('cascade');
-            $table->string('cart_id');
+            $table->string('cart_id')->nullable();
             $table->foreign('cart_id')->references('cart_id')->on('cart')->onDelete('cascade');
-            $table->unsignedBigInteger('jumlah');
             $table->timestamps();
         });
     }

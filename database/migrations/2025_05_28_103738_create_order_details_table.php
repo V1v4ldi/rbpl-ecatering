@@ -15,9 +15,10 @@ return new class extends Migration
             $table->string('order_d_id')->primary();
             $table->string('order_id');
             $table->foreign('order_id')->references('order_id')->on('order')->onDelete('cascade');
-            $table->string('cart_d_id');
-            $table->foreign('cart_d_id')->references('cart_d_id')->on('cart_detail')->onDelete('cascade');
+            $table->string('product_id');
+            $table->foreign('product_id')->references('product_id')->on('product')->onDelete('cascade');
             $table->unsignedInteger('harga_now');
+            $table->unsignedInteger('jumlah')->nullable();
             $table->timestamps();
         });
     }

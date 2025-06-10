@@ -14,6 +14,7 @@ class customer extends Authenticatable
      */
     protected $table = "customer";
     protected $primaryKey = 'customer_id';
+    public $incrementing = false;
     protected $fillable = [
         'name',
         'email',

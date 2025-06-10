@@ -1,11 +1,11 @@
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
-    <section class="text-center py-16 px-5 max-w-screen-xl mx-auto">
+    <section class="text-center py-4 lg:py-16 px-5 max-w-screen-xl mx-auto">
         <h1 class="text-5xl font-bold mb-4">Catering Penuh<br>Kelezatan</h1>
         <p class="text-xl text-gray-600 mb-8">Eksplor Menu Kami yang Penuh Kelezatan</p>
-        <a href="#" class="inline-block px-7 py-3 bg-[#ff9a00] text-white font-semibold rounded-lg transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5">Pesan Sekarang!</a>
+        <a href="{{ route('order') }}" class="inline-block px-7 py-3 bg-[#ff9a00] text-white font-semibold rounded-lg transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5">Pesan Sekarang!</a>
         <div class="w-full max-w-screen-lg mx-auto mt-8 overflow-hidden shadow-lg">
-            <img src="{{ Vite::asset('resources/images/a-login.png') }}" alt="Meja makan dengan makanan dan dekorasi" class="w-full h-auto object-cover">
+            <img src="{{ Vite::asset('resources/images/Alogin.jpeg') }}" alt="Meja makan dengan makanan dan dekorasi" class="w-full h-auto object-cover">
         </div>
     </section>
 
@@ -24,8 +24,8 @@
                 <div class="p-4">
                     <h3 class="font-semibold text-base mb-1">{{ $product->nama }}</h3>
                     <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ $product->deskripsi }}</p>
-                    <p class="font-semibold text-[#ff9a00] mb-4">{{ $product->harga }}</p>
-                    <button class="w-full py-2 border rounded-[6px] border-[#ff9a00] text-[#ff9a00] font-semibold transition-all duration-300 hover:bg-[#ff9a00] hover:text-white cursor-pointer">Add to Cart</button>
+                    <p class="font-semibold text-[#ff9a00] mb-4">Rp. {{ number_format($product->harga, 0, ',', '.') }}</p>
+                    <button class="w-full py-2 border rounded-[6px] border-[#ff9a00] text-[#ff9a00] font-semibold transition-all duration-300 hover:bg-[#ff9a00] hover:text-white cursor-pointer add-to-cart" data-productid = {{ $product->product_id }}>Add to Cart</button>
                 </div>
             </div>
                 @endforeach
@@ -37,34 +37,6 @@
     <section class="text-center py-20 px-5 bg-gray-50 mt-16">
         <h2 class="text-4xl font-semibold text-[#ff9a00] mb-5">Nikmati Hidangan Premium, Tanpa Repot!</h2>
         <p class="text-lg mb-8 max-w-2xl mx-auto">Rasakan Layanan Catering Terbaik Kami. Kontak Kami Hari Ini dan Tingkatkan Pengalaman Makan Anda!</p>
-        <a href="#" class="inline-block px-7 py-3 bg-[#ff9a00] text-white font-semibold rounded-lg transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5">Pesan</a>
+        <a href="{{ route('order') }}" class="inline-block px-7 py-3 bg-[#ff9a00] text-white font-semibold rounded-lg transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5">Pesan</a>
     </section>
-    <script>
-        // Cart functionality (for demo purposes)
-        document.addEventListener('DOMContentLoaded', function() {
-            const addToCartButtons = document.querySelectorAll('button');
-            
-            addToCartButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const productCard = this.closest('.p-4');
-                    if (productCard) {
-                        const productName = productCard.querySelector('h3').textContent;
-                        alert(`${productName} telah ditambahkan ke keranjang!`);
-                    }
-                    // In a real app, you would update cart count and store items
-                });
-            });
-            
-            // Logout functionality
-            const logoutButton = document.querySelector('header svg:last-of-type').parentNode;
-            if (logoutButton) {
-                logoutButton.addEventListener('click', function() {
-                    if (confirm('Apakah Anda yakin ingin keluar?')) {
-                        alert('Anda telah keluar dari sistem.');
-                        // In a real app, you would handle actual logout here
-                    }
-                });
-            }
-        });
-    </script>
 </x-layout>

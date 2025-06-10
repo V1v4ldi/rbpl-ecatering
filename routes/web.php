@@ -4,8 +4,10 @@ use App\Models\product;
 use App\Http\Controllers\Alluser;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\Menucontroller;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RegisterController;
 
 Route::get('/', function () {
@@ -29,7 +31,8 @@ Route::get('/dbtest', function () {
 });
 
 Route::get('/test', function () {
-    return view('testing', ['title' => 'TEST', 'daftar' => 'true']);
+    $products = product::paginate(8);
+    return view('testing', ['title' => 'TEST', 'daftar' => 'true'], compact('products'));
 })->name('test');
 
 /*
@@ -51,24 +54,38 @@ Route::get('/recipt', function () {
     return view('logged-in.recipt', ['title' => 'E-Catering']);
 })->name('recipt');
 
-Route::get('/checkout', function () {
-    return view('logged-in.cart', ['title' => 'E-Catering']);
-})->name('checkout')->middleware('auth:customer');
+Route::get('/cart', [CartController::class, 'cart'])->name('checkout')->middleware('auth:customer');
+Route::post('/cart/add', [CartController::class, 'additem'])->name('cart.add')->middleware('auth:customer');
+Route::post('/cart/remove', [CartController::class, 'rmitem'])->name('cart.remove')->middleware('auth:customer');
+Route::get('/cart/items', [CartController::class, 'takeitem'])->name('cart.get')->middleware('auth:customer');
 
-Route::get('/order', function () {
-    $products = product::paginate(8);
-    return view('logged-in.order', ['title' => 'E-Catering'], compact('products'));
-})->name('order')->middleware('auth:customer');
+/* 
+{{-- ORDER ROUTE --}}
+*/
+
+Route::get('/order', [OrderController::class, 'page'])->name('order')->middleware('auth:customer');
+Route::get('/order/get', [OrderController::class, 'getorder'])->name('order.get')->middleware('auth:customer');
+Route::get('/order/date', [OrderController::class, 'getdate'])->name('order.get.date')->middleware('auth:customer');
+Route::post('/order/create', [OrderController::class, 'mkorder'])->name('order.create')->middleware('auth:customer');
+Route::post('/order/cancel', [OrderController::class, 'rmorder'])->name('order.cancel')->middleware('auth:customer');
+
+/* 
+{{-- PROFILE ROUTE --}}
+*/
 
 Route::get('/profile', [Alluser::class, 'customerprofile'])->name('cust.profile')->middleware('auth:customer');
+
 /* 
 {{-- ADMIN ROUTE --}}
 */
+
 Route::get('/admin/home', [Alluser::class, 'adminhome'])->name('adminhome')->middleware('auth:admin');
 Route::resource('admin/menu', Menucontroller::class)->middleware('auth:admin');
 Route::get('/admin/profile', [Alluser::class, 'adminprofile'])->name('admin.profile')->middleware('auth:admin');
+
 /* 
 {{-- OWNER ROUTE --}}
 */
+
 Route::get('/owner/home', [Alluser::class, 'ownerhome'])->name('ownerhome')->middleware('auth:owner');
 Route::get('/owner/profile', [Alluser::class, 'ownerprofile'])->name('owner.profile')->middleware('auth:owner');

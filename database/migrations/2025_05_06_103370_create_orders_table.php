@@ -18,8 +18,10 @@ return new class extends Migration
             $table->foreign('customer_id')->references('customer_id')->on('customer')->onDelete('cascade');
             $table->foreign('admin_id')->references('admin_id')->on('admin')->onDelete('cascade');
             $table->date('tanggal_kirim');
+            $table->time('waktu');
             $table->string('alamat');
-            $table->boolean('payment_status');
+            $table->string('catatan');
+            $table->enum('status_pesanan', ['Belum Dibayar', 'Sedang Diverifikasi', 'Sudah Diverifikasi', 'Sedang Dibuat', 'Dalam Pengiriman', 'Selesai'])->default('Belum Dibayar');
             $table->timestamps();
         });
     }

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\admin as modelsadmin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -14,7 +15,7 @@ class admin extends Seeder
      */
     public function run(): void
     {
-        DB::table('admin')->insert([
+       modelsadmin::create([
             'name' => 'admin', 
             'email' => 'admin@gmail.com', 
             'password' => bcrypt('admin12345'), 

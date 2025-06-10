@@ -15,6 +15,12 @@ export default defineConfig({
         host: '127.0.0.1',
         watch:{
             usePolling: true
-        }
-    }
+        },
+        cors: true,
+    },
+    resolve: {
+        alias: {
+            '$': 'jQuery'
+        },
+    },
 });
