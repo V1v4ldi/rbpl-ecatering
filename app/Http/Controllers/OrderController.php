@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Events\TransactionBeginning;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -39,7 +40,13 @@ class OrderController extends Controller
     public function getorder(Request $request){
         $customer = auth('customer')->user();
 
-        $orders = order::where('customer_id', $customer->customer_id)->orderBy('created_at')->get();
+        $orders = order::where('customer_id', $customer->customer_id)->where('status_pesanan', 'Belum Dibayar')->orderBy('created_at')->get();
+
+        $orders->transform(function($order){
+            $order->encrypted_id = Crypt::encrypt($order->order_id);
+            return $order;
+        });
+        unset($orders->order_id);
 
         return response()->json([
             'success' => true,
@@ -54,9 +61,13 @@ class OrderController extends Controller
         'tanggal_kirim' => 'required|date|after:today',
         'alamat' => 'required|string|max:500',
         'waktu' => 'required|string',
+        'jumlah' => 'required|integer|min:50',
         'catatan' => 'nullable|string|max:500',
         'checkoutt' => 'boolean',
+        ],[
+            'jumlah.min' => 'Paket Katering Kurang Dari 50',
         ]);
+
 
         if($request->checkoutt){
             try{
@@ -66,6 +77,7 @@ class OrderController extends Controller
                     'customer_id' => $customer->customer_id,
                     'tanggal_kirim' => $request->tanggal_kirim,
                     'waktu' => $request->waktu,
+                    'jumlah' => $request->jumlah,
                     'alamat' => $request->alamat,
                     'catatan' => $request->catatan,
                 ]);
@@ -97,12 +109,15 @@ class OrderController extends Controller
 
                 DB::commit();
 
+                $encrypted_id = Crypt::encrypt($orderstatus->order_id);
+
                 return response()->json([
                     'success'=> true,
                     'message' => 'Pesanan Berhasil Dibuat',
-                    'order_id' => $order->order_id
+                    'redirect' => '/payment/'. $encrypted_id,
                 ]);
 
+                return redirect()->route('payment', $encrypted_id);
             } catch (\Exception $e) {
                 DB::rollback();
                 return response()->json([

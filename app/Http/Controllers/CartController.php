@@ -28,6 +28,10 @@ class CartController extends Controller
     }
 
     public function additem(Request $request){
+        $request->validate([
+            'product_id' => 'required|exists:product,product_id',
+        ],['product_id.required' => 'Tidak ada produk yang dikirim!']);
+
         $customer = auth('customer')->user();
         $cart = cart::where('customer_id', $customer->customer_id)->firstOrfail();
         cart_detail::create([

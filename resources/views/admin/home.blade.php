@@ -1,14 +1,14 @@
 <x-layout>
-    <div class="max-w-6xl mx-auto px-4 py-5" x-data="{'isModalOpen': false, page: 'dp'}" x-on:keydown.escape="isModalOpen=false">
+    <div class="max-w-6xl mx-auto px-4 py-5" x-data="{'isModalOpen': false, page: 'km'}" x-on:keydown.escape="isModalOpen=false">
         <section class="border-b border-gray-200 mb-10 flex px-2">
             <div class="flex gap-20">
-                <button @click="page = 'km'" class="nav-tab px-8 py-4 text-sm font-medium hover:text-gray-800 hover:border-none text-[#ff9a00] border-b-2 border-[#ff9a00] bg-white cursor-pointer">
+                <button @click="page = 'km'" class="nav-tab px-8 py-4 text-sm font-medium hover:text-gray-800 hover:border-none border-b-2 cursor-pointer" :class="page == 'km' ? 'border-[#ff9a00] text-[#ff9a00]' : 'border-transparent text-gray-600'">
                 Katalog Menu
                 </button>
-                <button @click="page = 'dp'" class="nav-tab px-8 py-4 text-sm font-medium text-gray-600 hover:border-none hover:text-gray-800 cursor-pointer">
+                <button @click="page = 'dp'" class="nav-tab px-8 py-4 text-sm font-medium hover:border-none hover:text-gray-800 cursor-pointer border-b-2" :class="page == 'dp' ? 'border-[#ff9a00] text-[#ff9a00]' : 'border-transparent text-gray-600'">
                 Pesanan
                 </button>
-                <button @click="page = 'dr'" class="nav-tab px-8 py-4 text-sm font-medium text-gray-600 hover:border-none hover:text-gray-800 cursor-pointer">
+                <button @click="page = 'dr'" class="nav-tab px-8 py-4 text-sm font-medium hover:border-none hover:text-gray-800 cursor-pointer border-b-2" :class="page == 'dr' ? 'border-[#ff9a00] text-[#ff9a00]' : 'border-transparent text-gray-600'">
                 Reservasi
                 </button>
             </div>
@@ -48,56 +48,106 @@
             </div>
             @endforeach
         </div>
+        <div id="pagination-container" class="mb-10">
+            {{ $products->links() }}
+        </div>
     </div>
 
             {{-- Page Pesanan --}}
-            <div x-show="page === 'dp'" class="">
-                <div class="">
+            <div x-show="page === 'dp'" class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
 
+                    
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ID
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama Pelanggan
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tanggal Kirim
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Total
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi
+                                </th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($orders as $order)
+                            <tr>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $order->order_id }}</td>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $order->customer->name }}</td>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ \Carbon\Carbon::parse($order->tanggal_kirim)->translatedFormat('d F Y') }}</td>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Rp. {{ number_format($order->total, 0 , ',', '.') }}</td>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $order->status_pesanan }}</td>
+                                <td class="px-4 py-3 text-center text-xs text-gray-500 uppercase tracking-wider">
+                                    <button class="bg-gray-200 w-[80px] h-[25px] text-black rounded-[6px] cursor-pointer">Detail</button>
+                                    <button class="bg-[#ff9a00] w-[80px] h-[25px] text-white rounded-[6px] cursor-pointer">Update</button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="">
-
-                </div>
-
-                <table>
-                    <thead>
-                        <tr class="">
-                            <th scope="col" class="space-x-3">
-                                ID
-                            </th>
-                            <th scope="col">
-                                Nama Pelanggan
-                            </th>
-                            <th scope="col">
-                                Tanggal
-                            </th>
-                            <th scope="col">
-                                Total
-                            </th>
-                            <th scope="col">
-                                Status
-                            </th>
-                            <th scope="col">
-                                Aksi
-                            </th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr>
-                            <td>#id</td>
-                            <td>Mas Amba</td>
-                            <td>2025</td>
-                            <td>350000</td>
-                            <td>status</td>
-                            <td>aksi</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
 
+            {{-- Page Reservasi --}}
+            <div x-show="page === 'dr'" class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
 
+                    
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    ID
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Nama Pelanggan
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Tanggal Kirim
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Total
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                </th>
+                                <th scope="col" class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Aksi
+                                </th>
+                            </tr>
+                        </thead>
+                        
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @foreach($orders as $order)
+                            <tr>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $order->order_id }}</td>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $order->customer->name }}</td>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ \Carbon\Carbon::parse($order->tanggal_kirim)->translatedFormat('d F Y') }}</td>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Rp. {{ number_format($order->total, 0 , ',', '.') }}</td>
+                                <td class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ $order->status_pesanan }}</td>
+                                <td class="px-4 py-3 text-center text-xs text-gray-500 uppercase tracking-wider">
+                                    <button class="bg-gray-200 w-[80px] h-[25px] text-black rounded-[6px] cursor-pointer">Detail</button>
+                                    <button class="bg-[#ff9a00] w-[80px] h-[25px] text-white rounded-[6px] cursor-pointer">Update</button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
 
 

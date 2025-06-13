@@ -35,9 +35,9 @@
                 
             </div>
             <div class="mt-6 float-right">
-                <button class="py-2 px-4 rounded-[6px] text-gray-200 bg-green-500 text-sm cursor-pointer ml-2 hover:bg-green-600 hover:text-gray-1<span>00 hover:-translate-y-2 duration-300">
+                <a href="{{ route("order") }}" class="py-2 px-4 rounded-[6px] text-gray-200 bg-green-500 text-sm cursor-pointer ml-2 hover:bg-green-600 hover:text-gray-1<span>00 hover:-translate-y-2 duration-300">
                     <i class='bx bx-cart' ></i> Checkout
-                </button>
+                </a>
             </div>
         </div>
 
@@ -94,10 +94,10 @@
         </div>
     </div>
     @section('script')
-    @include('script.remove-cart-item')
     @include('script.render-cart')
     @include('script.render-order')
     @include('script.cart-item-get')
     @include('script.cart-order-get-script')
+    @include('script.remove-cart-item')
     @stop
 </x-layout>

@@ -8,6 +8,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\Menucontroller;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegisterController;
 
 Route::get('/', function () {
@@ -46,9 +48,6 @@ Route::get('/home', function(){
    return view('logged-in.home', ['title' => 'Home'],compact('products')); 
 })->name('home')->middleware('auth:customer');
 
-Route::get('/payment', function () {
-    return view('logged-in.payment', ['title' => 'Pembayaran']);
-})->name('payment');
 
 Route::get('/recipt', function () {
     return view('logged-in.recipt', ['title' => 'E-Catering']);
@@ -60,9 +59,11 @@ Route::post('/cart/remove', [CartController::class, 'rmitem'])->name('cart.remov
 Route::get('/cart/items', [CartController::class, 'takeitem'])->name('cart.get')->middleware('auth:customer');
 
 /* 
-{{-- ORDER ROUTE --}}
+{{-- ORDER & PRODUCT & PAYMENT ROUTE --}}
 */
+Route::get('/payment/{encrypted_id}', [PaymentController::class, 'show'])->name('payment')->middleware('auth:customer');
 
+Route::get('/product/get', [ProductController::class, 'getproductspaginated'])->name('product.get');
 Route::get('/order', [OrderController::class, 'page'])->name('order')->middleware('auth:customer');
 Route::get('/order/get', [OrderController::class, 'getorder'])->name('order.get')->middleware('auth:customer');
 Route::get('/order/date', [OrderController::class, 'getdate'])->name('order.get.date')->middleware('auth:customer');

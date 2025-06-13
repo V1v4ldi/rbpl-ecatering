@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('product_id');
             $table->foreign('product_id')->references('product_id')->on('product')->onDelete('cascade');
             $table->unsignedInteger('harga_now');
-            $table->unsignedInteger('jumlah')->nullable();
             $table->timestamps();
         });
     }

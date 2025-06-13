@@ -1,6 +1,14 @@
 <x-layout>
     <x-slot:title>{{ $title }}</x-slot:title>
-    <div class="container mx-auto max-w-5xl px-4 py-6">
+    @php
+        $subtotal = 0;
+        foreach($order_items as $item) {
+            $subtotal += $order->jumlah * $item->harga_now;
+        }
+        $diskon = 0;
+        $total = $subtotal - $diskon;
+    @endphp
+    <div class="container mx-auto max-w-5xl px-0 py-6">
         <div class="bg-white rounded-xl p-6 shadow-sm mb-8">
             <div class="flex justify-between relative max-w-2xl mx-auto">
                 <!-- Progress line background -->
@@ -31,6 +39,7 @@
         </div>
     </div>
     
+
     <!-- Payment container -->
     <div class="flex flex-col md:flex-row gap-6">
         <!-- Left column -->
@@ -43,15 +52,15 @@
                     <h3 class="text-sm font-medium mb-4 text-primary">Batas Waktu Pembayaran</h3>
                     <div class="flex justify-center gap-4">
                         <div class="flex flex-col items-center ">
-                            <div class="w-12 h-12 bg-[#ff9a00] rounded-lg flex items-center justify-center text-white font-bold text-lg" id="hours">23</div>
+                            <div class="w-12 h-12 bg-[#ff9a00] rounded-lg flex items-center justify-center text-white font-bold text-lg" id="hours">{{ str_pad(floor($remainingSeconds / 3600), 2, '0', STR_PAD_LEFT) }}</div>
                             <div class="text-xs mt-1 text-gray-600">Jam</div>
                         </div>
                         <div class="flex flex-col items-center ">
-                            <div class="w-12 h-12 bg-[#ff9a00] rounded-lg flex items-center justify-center text-white font-bold text-lg" id="minutes">59</div>
+                            <div class="w-12 h-12 bg-[#ff9a00] rounded-lg flex items-center justify-center text-white font-bold text-lg" id="minutes">{{ str_pad(floor(($remainingSeconds % 3600) / 60), 2, '0', STR_PAD_LEFT) }}</div>
                             <div class="text-xs mt-1 text-gray-600">Menit</div>
                         </div>
                         <div class="flex flex-col items-center ">
-                            <div class="w-12 h-12 bg-[#ff9a00] rounded-lg flex items-center justify-center text-white font-bold text-lg" id="seconds">59</div>
+                            <div class="w-12 h-12 bg-[#ff9a00] rounded-lg flex items-center justify-center text-white font-bold text-lg" id="seconds">{{ str_pad($remainingSeconds % 60, 2, '0', STR_PAD_LEFT) }}</div>
                             <div class="text-xs mt-1 text-gray-600">Detik</div>
                         </div>
                     </div>
@@ -104,7 +113,7 @@
                             <div class="font-medium">No. Rekening:</div>
                             <div class="flex items-center">
                                 8790123456
-                                <button class="bg-gray-200 text-sm px-2 py-0.5 rounded ml-2 hover:bg-gray-300" onclick="copyToClipboard('8790123456')">Salin</button>
+                                <button class="cursor-pointer bg-gray-200 text-sm px-2 py-0.5 rounded ml-2 hover:bg-gray-300 " onclick="copyToClipboard('')">Salin</button>
                             </div>
                         </div>
                         <div class="flex justify-between mb-3">
@@ -114,8 +123,8 @@
                         <div class="flex justify-between">
                             <div class="font-medium">Jumlah:</div>
                             <div class="text-[#ff9a00] font-bold flex items-center">
-                                Rp 350.000
-                                <button class="bg-gray-200 text-sm px-2 py-0.5 rounded ml-2 hover:bg-gray-300" onclick="copyToClipboard('350000')">Salin</button>
+                                Rp. {{ number_format($total, 0, ',', '.') }}
+                                <button class="cursor-pointer bg-gray-200 text-sm px-2 py-0.5 rounded ml-2 hover:bg-gray-300 " onclick="copyToClipboard('{{ $total }}')">Salin</button>
                             </div>
                         </div>
                     </div>
@@ -153,42 +162,30 @@
                 
                 <!-- Order Items -->
                 <div class="mb-6">
+                    @foreach ($order_items as $orders)
                     <div class="flex mb-4 pb-4 border-b border-gray-200">
-                        <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden mr-4">
-                            <img src="/api/placeholder/64/64" alt="Rendang Daging Sapi" class="w-full h-full object-cover">
-                        </div>
                         <div class="flex-grow">
-                            <div class="font-semibold mb-1">Rendang Daging Sapi</div>
-                            <div class="text-sm text-gray-600">15 x Rp 20.000</div>
+                            <div class="font-semibold mb-1">{{ $orders->product->nama }}</div>
+                            <div class="text-sm text-gray-600">{{ $order->jumlah }} x Rp. {{ number_format($orders->harga_now, 0, ',', '.') }}</div>
                         </div>
-                        <div class="font-semibold">Rp 300.000</div>
+                        <div class="font-semibold">Rp. {{ number_format($order->jumlah * $orders->harga_now, 0, ',', '.') }}</div>
                     </div>
-                    
-                    <div class="flex mb-4 pb-4 border-b border-gray-200">
-                        <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden mr-4">
-                            <img src="/api/placeholder/64/64" alt="Mie Kuning Goreng" class="w-full h-full object-cover">
-                        </div>
-                        <div class="flex-grow">
-                            <div class="font-semibold mb-1">Mie Kuning Goreng</div>
-                            <div class="text-sm text-gray-600">20 x Rp 5.000</div>
-                        </div>
-                        <div class="font-semibold">Rp 100.000</div>
-                    </div>
+                    @endforeach
                 </div>
                 
-                <!-- Order Summary -->
                 <div class="mb-6">
+                                        
                     <div class="flex justify-between mb-2">
                         <div>Subtotal</div>
-                        <div>Rp 400.000</div>
+                        <div>Rp {{ number_format($subtotal, 0, ',', '.') }}</div>
                     </div>
                     <div class="flex justify-between mb-2">
                         <div>Diskon</div>
-                        <div>- Rp 50.000</div>
+                        <div>- Rp {{ number_format($diskon, 0, ',', '.') }}</div>
                     </div>
                     <div class="flex justify-between font-bold text-lg text-[#ff9a00] mt-4 pt-4 border-t border-gray-200">
                         <div>Total</div>
-                        <div>Rp 350.000</div>
+                        <div>Rp {{ number_format($total, 0, ',', '.') }}</div>
                     </div>
                 </div>
                 
@@ -198,128 +195,28 @@
                     
                     <div class="flex mb-3">
                         <div class="w-24 font-medium">Tanggal:</div>
-                        <div>20 April 2025</div>
+                        <div>{{ \Carbon\Carbon::parse($order->tanggal_kirim)->translatedFormat('d F Y') }}</div>
                     </div>
                     <div class="flex mb-3">
                         <div class="w-24 font-medium">Waktu:</div>
-                        <div>12:00 WIB</div>
+                        <div>{{ \Carbon\Carbon::parse($order->waktu)->format('H:i') }}</div>
                     </div>
                     <div class="flex mb-3">
                         <div class="w-24 font-medium">Alamat:</div>
-                        <div>Jl. Kebon Jeruk Raya No. 123, Jakarta Barat</div>
+                        <div>{{ $order->alamat }}</div>
                     </div>
                     <div class="flex mb-3">
                         <div class="w-24 font-medium">Catatan:</div>
-                        <div>Mohon diantarkan tepat waktu</div>
+                        <div>{{ $order->catatan }}</div>
                     </div>
                 </div>
-                
-                <button class="w-full bg-gray-200 text-gray-800 py-4 rounded-lg font-medium mt-6 hover:bg-gray-300 cursor-pointer transition-colors">Kembali ke Pesanan</button>
-            </div>
-        </div>
-    </div>
+                <button onclick="window.location.href='{{ route('checkout') }}'" class="cursor-pointer w-full bg-gray-200 text-gray-800 py-4 rounded-lg font-medium mt-6 hover:bg-gray-300 transition-colors">Kembali Ke Keranjang</button>
+            </div> 
+        </div> 
+    </div> 
 </div>
-<script>
-    // Timer functionality
-    function startTimer(duration) {
-        let timer = duration;
-        const hoursElem = document.getElementById('hours');
-        const minutesElem = document.getElementById('minutes');
-        const secondsElem = document.getElementById('seconds');
-        
-        function updateTimer() {
-            const hours = Math.floor(timer / 3600);
-            const minutes = Math.floor((timer % 3600) / 60);
-            const seconds = timer % 60;
-            
-            hoursElem.textContent = hours < 10 ? "0" + hours : hours;
-            minutesElem.textContent = minutes < 10 ? "0" + minutes : minutes;
-            secondsElem.textContent = seconds < 10 ? "0" + seconds : seconds;
-            
-            if (--timer < 0) {
-                timer = 0;
-                clearInterval(interval);
-                alert('Waktu pembayaran sudah habis!');
-            }
-        }
-        
-        updateTimer();
-        const interval = setInterval(updateTimer, 1000);
-        return interval;
-    }
-    
-    // Start timer with 24 hours (86400 seconds)
-    let timerInterval;
-    window.onload = function() {
-        // Setting timer to match the display - 23:59:59
-        timerInterval = startTimer(23 * 3600 + 59 * 60 + 59);
-    };
-    
-    // Payment Method Selection
-    const transferBank = document.getElementById('transfer-bank');
-    const bayarDiTempat = document.getElementById('bayar-ditempat');
-    const bankSelection = document.getElementById('bank-selection');
-    
-    transferBank.addEventListener('click', function() {
-        transferBank.classList.add('bg-amber-50', 'border-[#ff9a00]');
-        transferBank.classList.remove('border-gray-200');
-        bayarDiTempat.classList.remove('bg-amber-50', 'border-[#ff9a00]');
-        bayarDiTempat.classList.add('border-gray-200');
-        bankSelection.style.display = 'block';
-    });
-    
-    bayarDiTempat.addEventListener('click', function() {
-        bayarDiTempat.classList.add('bg-amber-50', 'border-[#ff9a00]');
-        bayarDiTempat.classList.remove('border-gray-200');
-        transferBank.classList.remove('bg-amber-50', 'border-[#ff9a00]');
-        transferBank.classList.add('border-gray-200');
-        bankSelection.style.display = 'none';
-    });
-    
-    // Bank Option Selection
-    function selectBank(element, bankName) {
-        // Remove active class from all options
-        const bankOptions = document.querySelectorAll('[onclick^="selectBank"]');
-        bankOptions.forEach(option => {
-            option.classList.remove('bg-amber-50', 'border-[#ff9a00]');
-            option.classList.add('border-gray-200');
-        });
-        
-        // Add active class to clicked option
-        element.classList.add('bg-amber-50', 'border-[#ff9a00]');
-        element.classList.remove('border-gray-200');
-        
-        // Check the radio button
-        const radioBtn = element.querySelector('input[type="radio"]');
-        radioBtn.checked = true;
-        
-        // Update bank name in details
-        document.getElementById('bank-name').textContent = bankName;
-        
-        // Define different account numbers for each bank
-        const bankAccounts = {
-            'BCA': '8790123456',
-            'Mandiri': '1234567890',
-            'BNI': '0987654321',
-            'BRI': '1357924680'
-        };
-        
-        // Update account number based on selected bank
-        const accountNumberElement = document.querySelector('.flex.justify-between.mb-3:nth-child(2) .flex.items-center');
-        const accountNumber = bankAccounts[bankName];
-        
-        // Update the account number display
-        accountNumberElement.innerHTML = accountNumber + 
-            ' <button class="bg-gray-200 text-sm px-2 py-0.5 rounded ml-2 hover:bg-gray-300" onclick="copyToClipboard(\'' + accountNumber + '\')">Salin</button>';
-    }
-    
-    // Copy to clipboard functionality
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(function() {
-            alert('Disalin ke clipboard: ' + text);
-        }, function(err) {
-            console.error('Gagal menyalin: ', err);
-        });
-    }
-</script>
+
+@section('script')
+@include('script.payment-script')
+@stop
 </x-layout>

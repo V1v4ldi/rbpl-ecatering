@@ -1,6 +1,5 @@
 <script>
-    window.addEventListener('load', function() {
-        function getcart(){
+        window.getcart = function(){
                 $.ajax({
                     url: '{{ route("cart.get") }}',
                     type: 'GET',
@@ -28,6 +27,7 @@
             }
         });
     }
-getcart();
-});
+    window.addEventListener('load', function() {
+        getcart();
+    });
 </script>

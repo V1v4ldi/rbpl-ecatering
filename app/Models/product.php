@@ -15,4 +15,8 @@ class product extends Model
         'deskripsi',
         'harga',
         'imgname'];
+
+    public function order_detail(){
+        return $this->hasOne(order_detail::class, 'product_id', 'product_id');
+    }
 }

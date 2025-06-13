@@ -63,6 +63,12 @@ class product extends Seeder
            'imgname' => 'Rendang.jpg',
             'created_at' => NOW(),
             'updated_at' => NOW(),],
+           ['nama' => 'Burger', 
+           'harga' => 5000, 
+           'Deskripsi' => 'ini masih testing', 
+           'imgname' => 'Burger.jpg',
+            'created_at' => NOW(),
+            'updated_at' => NOW(),],
         ]);
     }
 }

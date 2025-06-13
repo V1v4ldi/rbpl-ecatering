@@ -21,6 +21,7 @@ return new class extends Migration
             $table->time('waktu');
             $table->string('alamat');
             $table->string('catatan');
+            $table->unsignedInteger('jumlah');
             $table->enum('status_pesanan', ['Belum Dibayar', 'Sedang Diverifikasi', 'Sudah Diverifikasi', 'Sedang Dibuat', 'Dalam Pengiriman', 'Selesai'])->default('Belum Dibayar');
             $table->timestamps();
         });

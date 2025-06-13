@@ -278,7 +278,8 @@
         const deliveryTime = document.getElementById('delivery-time').value;
         const deliveryAddress = deliveryAddressInput.value.trim();
         const deliveryNotes = deliveryNotesInput.value.trim();
-        
+        const deliveryquantity = document.getElementById('delivery-quantity').value;
+
         // Validation
         if (!selectedDate) {
             Swal.fire({
@@ -305,6 +306,17 @@
                 icon: 'warning',
                 title: 'Alamat Belum Diisi',
                 text: 'Silakan isi alamat pengiriman terlebih dahulu',
+                confirmButtonColor: '#ff9a00'
+            });
+            deliveryAddressInput.focus();
+            return;
+        }
+
+        if (!deliveryquantity) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Jumlah Katering Belum Ada',
+                text: 'Silakan isi jumlah dari katering yang ingin dipesan',
                 confirmButtonColor: '#ff9a00'
             });
             deliveryAddressInput.focus();
@@ -340,6 +352,7 @@
                         alamat: deliveryAddress,
                         catatan: deliveryNotes,
                         waktu: deliveryTime,
+                        jumlah: deliveryquantity,
                         checkoutt: 1,
                         _token: '{{ csrf_token() }}',
                     },
@@ -351,7 +364,7 @@
                             confirmButtonColor: '#ff9a00'
                         }).then(() => {
                             // Redirect to cart or order summary
-                            window.location.href = '{{ route("checkout") }}';
+                            window.location.href = response.redirect;
                         });
                     },
                     error: function(xhr){
@@ -362,14 +375,26 @@
                             if (errors) {
                                 errorMessage = Object.values(errors).flat().join('\n');
                             }
+                        }  else if (xhr.status === 400) { // ✅ Tambahkan penanganan untuk status 400
+                            // Untuk error seperti keranjang kosong, dll
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            } else {
+                                errorMessage = 'Permintaan tidak valid atau terjadi kesalahan pada data.';
+                            }
                         } else if (xhr.status === 401) {
                             errorMessage = 'Sesi telah berakhir, silakan login kembali';
                         } else if (xhr.status === 404) {
                             errorMessage = 'Route tidak ditemukan';
                         } else if (xhr.status === 500) {
-                            errorMessage = 'Terjadi kesalahan pada server';
+                            // ✅ Juga tangani error 500 dari server dengan pesan yang lebih informatif
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                errorMessage = xhr.responseJSON.message;
+                            } else {
+                                errorMessage = 'Terjadi kesalahan pada server';
+                            }
                         }
-
+                        
                         Swal.fire({
                                 icon: 'error',
                                 title: 'Gagal Menyimpan!',

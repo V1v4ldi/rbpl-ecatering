@@ -19,6 +19,7 @@ class order extends Model
         'waktu',
         'alamat',
         'catatan',
+        'jumlah',
         'status_pesanan',
     ];
 
@@ -28,5 +29,9 @@ class order extends Model
 
     public function customer(){
         return $this->belongsTo(customer::class, 'customer_id', 'customer_id');
+    }
+
+    public function order_detail(){
+        return $this->hasMany(order_detail::class, 'order_id', 'order_id');
     }
 }

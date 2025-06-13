@@ -22,4 +22,8 @@ class customer extends Authenticatable
         'no_hp',
         'role', 
     ];
+
+    public function order(){
+        return $this->hasMany(order::class, 'customer_id', 'customer_id');
+    }
 }

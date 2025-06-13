@@ -3,24 +3,7 @@
     <main class="max-w-6xl mx-auto px-4 py-8">
         <h1 class="text-2xl font-semibold text-center mb-8">Produk Kami</h1>
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
-            <!-- Product -->
-            @foreach($products as $product)
-            <div class="bg-white rounded-lg overflow-hidden shadow hover:-translate-y-1 transition-transform duration-300 p-2">
-                <div class="h-44 overflow-hidden">
-                    <img src="{{ asset('storage/product/'. $product->imgname) }}" alt="Rendang Daging Sapi" class="w-full h-full rounded-[6px] object-cover">
-                </div>
-                <div class="p-4">
-                    <h3 class="font-semibold mb-1">{{ $product->nama }}</h3>
-                    <p class="text-sm text-gray-600 mb-1">{{ $product->deskripsi }}</p>
-                    <p class="font-semibold mb-3">Rp. {{ number_format($product->harga,0,',','.') }}</p>
-                    <button class="cursor-pointer w-full py-2 border border-[#ff9a00] text-[#ff9a00] hover:bg-[#ff9a00] hover:text-white transition-colors rounded font-medium add-to-cart" data-productid = {{ $product->product_id }}>
-                        Add to Cart
-                    </button>
-                </div>
-            </div>
-            @endforeach
-        </div>
+        <x-product :products="$products" />
         
         <div class="max-w-lg mx-auto bg-white rounded-lg shadow p-6">
             <h2 class="bg-[#ff9a00] text-white text-center py-3 rounded-t-lg font-semibold -mx-6 -mt-6 mb-6">Jadwal Pengiriman Catering</h2>
@@ -55,6 +38,11 @@
                 <label for="delivery-time" class="block mb-1 font-medium">Waktu Pengiriman</label>
                 <input type="time" id="delivery-time" class="w-full p-2 border border-gray-200 rounded">
             </div>
+
+            <div class="mb-4">
+                <label for="delivery-quantity" class="block mb-1 font-medium">Jumlah Catering</label>
+                <input type="number" id="delivery-quantity" class="w-full p-2 border border-gray-200 rounded">
+            </div>
             
             <div class="mb-4">
                 <label for="delivery-address" class="block mb-1 font-medium">Alamat Pengiriman</label>
@@ -76,5 +64,6 @@
     @include('script.render-cart')
     @include('script.cart-item-get')
     @include('script.order-script')
+    @include('script.product-script')
     @stop
 </x-layout>

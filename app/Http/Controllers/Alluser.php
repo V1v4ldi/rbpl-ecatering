@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\order;
+use App\Models\order_detail;
 
 class Alluser extends Controller
 {
@@ -20,8 +22,25 @@ class Alluser extends Controller
         {{-- ADMIN CONTROLLER --}}
 */
     public function adminhome(){
+        $orders = order::all();
+    
+    $total = 0;
+
+    foreach($orders as $order){
+        $ordertotal = 0;
+        
+        $orderdetail = order_detail::where('order_id', $order->order_id)->get();
+        
+        foreach($orderdetail as $detail){
+            $ordertotal += $detail->harga_now * $order->jumlah;
+        }
+        
+        $order->total = $ordertotal;
+        $total += $ordertotal;
+        }
+        
         $products = product::paginate(8);
-        return view('admin.home', ['title' => 'Home Admin'], compact('products'));
+        return view('admin.home', ['title' => 'Home Admin'], compact('products', 'orders', 'total'));
     }
 
     public function adminprofile()

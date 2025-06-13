@@ -20,13 +20,13 @@ const orderContainer = document.querySelector('#ordercontainer');
                 <div class="font-medium mb-1">Order tanggal: ${order.created_at}</div>
                 <div class="text-gray-600 text-sm mb-1">Order Dikirim: ${order.tanggal_kirim} Jam: ${order.waktu}</div>
                 <div class="text-gray-600 text-sm">Total: </div>
-                <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-1 mt-3 lg:-mt-10">
-                    <button class="py-1 px-2 lg:py-2 lg:px-5 rounded text-xs lg:text-sm cursor-pointer border border-gray-200 bg-white text-gray-600 w-full sm:w-auto">
-                        Belum Dibayar
+                <div class="flex flex-col sm:flex-row justify-end gap-2 sm:gap-1 mt-3 lg:-mt-15 lg:mb-5">
+                    <button class="py-1 px-2 lg:py-2 lg:px-5 rounded text-xs lg:text-sm border border-gray-200 bg-white text-gray-600 w-full sm:w-auto">
+                        ${order.status_pesanan}
                     </button>
-                    <button class="py-1 px-2 lg:py-2 lg:px-4 rounded text-xs lg:text-sm cursor-pointer bg-orange-500 text-white border border-orange-500 w-full sm:w-auto">
+                    <a href="/payment/${order.encrypted_id}" class="py-1 px-2 lg:py-2 lg:px-4 rounded text-xs lg:text-sm cursor-pointer bg-orange-500 text-white border border-orange-500 w-full sm:w-auto">
                         Bayar Sekarang
-                    </button>
+                    </a>
                 </div>
             </div>`;
             orderContainer.innerHTML += orderelement;
