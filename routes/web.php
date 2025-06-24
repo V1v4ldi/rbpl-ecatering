@@ -53,10 +53,16 @@ Route::get('/recipt', function () {
     return view('logged-in.recipt', ['title' => 'E-Catering']);
 })->name('recipt');
 
+/* 
+{{-- CART ROUTE --}}
+*/
 Route::get('/cart', [CartController::class, 'cart'])->name('checkout')->middleware('auth:customer');
 Route::post('/cart/add', [CartController::class, 'additem'])->name('cart.add')->middleware('auth:customer');
 Route::post('/cart/remove', [CartController::class, 'rmitem'])->name('cart.remove')->middleware('auth:customer');
 Route::get('/cart/items', [CartController::class, 'takeitem'])->name('cart.get')->middleware('auth:customer');
+Route::get('/cart/order/get', [OrderController::class, 'getorder'])->name('order.get')->middleware('auth:customer');
+Route::get('/cart/orders/verifed', [CartController::class, 'getOrder'])->name('diproses.get')->middleware('auth:customer');
+Route::get('/cart/orders/done', [CartController::class, 'getOrderDone'])->name('orderdone.get')->middleware('auth:customer');
 
 /* 
 {{-- ORDER & PRODUCT & PAYMENT ROUTE --}}
@@ -65,7 +71,6 @@ Route::get('/payment/{encrypted_id}', [PaymentController::class, 'show'])->name(
 
 Route::get('/product/get', [ProductController::class, 'getproductspaginated'])->name('product.get');
 Route::get('/order', [OrderController::class, 'page'])->name('order')->middleware('auth:customer');
-Route::get('/order/get', [OrderController::class, 'getorder'])->name('order.get')->middleware('auth:customer');
 Route::get('/order/date', [OrderController::class, 'getdate'])->name('order.get.date')->middleware('auth:customer');
 Route::post('/order/create', [OrderController::class, 'mkorder'])->name('order.create')->middleware('auth:customer');
 Route::post('/order/cancel', [OrderController::class, 'rmorder'])->name('order.cancel')->middleware('auth:customer');

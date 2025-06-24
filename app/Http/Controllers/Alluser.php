@@ -26,9 +26,9 @@ class Alluser extends Controller
             $customer = auth('customer')->user();
             
             $orders = order::with(['orderDetails.product', 'customer'])
-                ->where('customer_id', $customer->customer_id) // Filter by customer_id
+                ->where('customer_id', $customer->customer_id)
                 ->where('status_pesanan', 'Selesai')
-                ->orderBy('created_at', 'desc') // Lebih baik urutkan by created_at
+                ->orderBy('tanggal_kirim', 'asc')
                 ->get();
         }
 

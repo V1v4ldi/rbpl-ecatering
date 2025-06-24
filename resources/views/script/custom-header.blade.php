@@ -10,7 +10,7 @@
         @if (auth()->user()->role === 'admin')
             <x-navadmin />
         @elseif(auth()->user()->role === 'owner')
-            <x-navadmin />
+        <x-navadmin />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>

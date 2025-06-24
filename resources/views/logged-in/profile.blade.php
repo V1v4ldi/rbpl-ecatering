@@ -28,7 +28,7 @@
 
         <div class="flex flex-col md:flex-row gap-6">
             <!-- Sidebar Navigation -->
-            <div class="lg:w-full md:w-64 bg-white rounded-lg shadow-sm">
+            <div class="lg:w-l md:w-64 bg-white rounded-lg shadow-sm">
 
               {{-- Info Pribadi --}}
 

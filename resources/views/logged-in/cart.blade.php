@@ -51,51 +51,25 @@
         
         {{-- Diproses --}}
 
-        <div x-show="tab ==='dp'" x-cloak>
-            <div class="bg-white rounded-lg p-5 mb-4 shadow-sm border border-gray-200">
-                <div class="font-medium mb-1">Paket Prasmanan (50 Porsi)</div>
-                <div class="text-gray-600 text-sm mb-1">12 April 2025</div>
-                <div class="text-gray-600 text-sm">Total: Rp 1.250.000</div>
-                <div class="flex justify-end -mt-10">
-                    <button class="py-2 px-4 rounded text-sm cursor-pointer ml-2 border border-gray-200 bg-white text-gray-600">Diproses</button>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg p-5 mb-4 shadow-sm border border-gray-200">
-                <div class="font-medium mb-1">Paket Prasmanan (25 Porsi)</div>
-                <div class="text-gray-600 text-sm mb-1">12 April 2025</div>
-                <div class="text-gray-600 text-sm">Total: Rp 625.000</div>
-                <div class="flex justify-end -mt-10">
-                    <button class="py-2 px-4 rounded text-sm cursor-pointer ml-2 border border-gray-200 bg-white text-gray-600">Diproses</button>
-                </div>
+        <div x-show="tab ==='dp'" x-cloak class="bg-gray-100 p-3 rounded-[6px]">
+            <div id="dpContainer">
+                
             </div>
         </div>
         
         {{-- Selesai --}}
 
-        <div x-show="tab === 'dn'" x-cloak>
-            <div class="bg-white rounded-lg p-5 mb-4 shadow-sm border border-gray-200">
-                <div class="font-medium mb-1">Paket Snack Rapat</div>
-                <div class="text-gray-600 text-sm mb-1">15 April 2025</div>
-                <div class="text-gray-600 text-sm">Total: Rp 150.000</div>
-                <div class="flex justify-end -mt-10">
-                    <button class="py-2 px-4 rounded text-sm cursor-pointer ml-2 border border-green-500 bg-white text-green-500">Selesai</button>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg p-5 mb-4 shadow-sm border border-gray-200">
-                <div class="font-medium mb-1">Paket Snack Rapat</div>
-                <div class="text-gray-600 text-sm mb-1">15 April 2025</div>
-                <div class="text-gray-600 text-sm">Total: Rp 150.000</div>
-                <div class="flex justify-end -mt-10">
-                    <button class="py-2 px-4 rounded text-sm cursor-pointer ml-2 border border-green-500 bg-white text-green-500">Selesai</button>
-                </div>
+        <div x-show="tab === 'dn'" x-cloak class="bg-gray-100 p-3 rounded-[6px]">
+            <div id="dnContainer">
+
             </div>
         </div>
     </div>
     @section('script')
     @include('script.render-cart')
     @include('script.render-order')
+    @include('script.diproses-render')
+    @include('script.render-selesai')
     @include('script.cart-item-get')
     @include('script.cart-order-get-script')
     @include('script.remove-cart-item')

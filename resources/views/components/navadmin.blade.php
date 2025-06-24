@@ -8,15 +8,17 @@
 @endphp
 
 {{-- DESKTOP NAVBAR --}}
-<nav class="fixed justify-around items-center bottom-0 w-screen bg-gray-50 lg:hidden flex h-[80px] z-999 rounded-t-[15px]">
+<nav class="lg:flex h-[80px] w-screen top-0 bg-white z-9999 fixed hidden">
     <div class="w-1/2 flex items-center pb-[10px] pl-[24px]">
         <a href="{{ route($routehome) }}" class="space-x-3 flex items-center mr-[25px]">
             <img src="{{ Vite::asset('resources/images/logo.png') }}" alt="" class="h-[50px]">
             <span class="pb-[5px] text-3xl">E-Catering</span>
         </a>
-        <a href="{{ route($routehome) }}" class="pt-1 text-center w-[96px] hover:text-[#FFA900] hover:-translate-y-0.5 transition-all duration-300 border-b-4 rounded-[6px] cursor-pointer {{ request()->routeIs($routehome) ? 'text-[#ff9a00] border-[#ff9a00]' : 'border-transparent'}}">
-            Home
-        </a>
+        <div class="flex h-[52px] pt-[10px] pb-[5px]">
+            <a href="{{ route($routehome) }}" class="text-center w-[96px] hover:text-[#FFA900] hover:-translate-y-0.5 transition-all duration-300 border-b-4 rounded-[6px] cursor-pointer {{ request()->routeIs($routehome) ? 'text-[#ff9a00] border-[#ff9a00]' : 'border-transparent'}}">
+                Home
+            </a>
+        </div>
     </div>
     <div class="w-1/2 float-right flex items-center justify-end pb-[10px] pr-[24px] gap-[20px]">
         <form action="{{ route('logout') }}" method="POST">
@@ -34,7 +36,7 @@
 
 
 {{-- MOBILE NAVBAR --}}
-<nav class="fixed justify-around items-center bottom-0 w-screen bg-gray-50 lg:hidden flex h-[60px] z-999 rounded-full">
+<nav class="fixed justify-around items-center bottom-0 w-screen bg-gray-50 lg:hidden flex h-[60px] z-99999 rounded-full">
         <a href="{{ route($routeprofile) }}" class="flex flex-col items-center justify-center w-10 h-10">
             <i class='text-3xl bx bx-user-circle'></i>
             <span class="text-xs mt-1">Profile</span>

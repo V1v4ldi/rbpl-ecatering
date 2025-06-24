@@ -97,74 +97,183 @@
         });
     }
 
-    async function exportToPDF() {
-    const { jsPDF } = window.jspdf;
-    const content = document.getElementById('reportContent');
-    if (!content) {
-        alert('Elemen konten laporan (#reportContent) tidak ditemukan!');
+   async function exportToPDF() {
+    // ✅ Check library availability first
+    if (typeof html2canvas === 'undefined') {
+        alert('Library html2canvas tidak tersedia. Refresh halaman dan coba lagi.');
         return;
     }
-    const exportButton = document.getElementById('exportBtn'); // Menggunakan Vanilla JS
-    const originalButtonHTML = exportButton.innerHTML; // Menggunakan Vanilla JS
+    
+    if (typeof window.jspdf === 'undefined') {
+        alert('Library jsPDF tidak tersedia. Refresh halaman dan coba lagi.');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const content = document.getElementById('reportContent');
+    
+    if (!content) {
+        alert('Elemen konten laporan tidak ditemukan!');
+        return;
+    }
+
+    const exportButton = document.getElementById('exportBtn');
+    const originalButtonHTML = exportButton.innerHTML;
+    
     exportButton.innerHTML = `
-        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
         Mengekspor...`;
-    exportButton.disabled = true; // Menggunakan Vanilla JS
+    exportButton.disabled = true;
 
-    const selectorsToHide = ['header > .flex.items-center.gap-4', '#prevBtn', '#nextBtn', '#monthlyBtn', '#yearlyBtn', '#exportBtn', '#paginationInfo', '.pageBtn', '#prevPage', '#nextPage', '#loadingOverlay'];
+    const selectorsToHide = [
+        '#prevBtn', '#nextBtn', '#monthlyBtn', '#yearlyBtn', '#exportBtn', 
+        '#paginationInfo', '.pageBtn', '#prevPage', '#nextPage', 
+        '#loadingOverlay', '.hover\\:text-green-500'
+    ];
+    
     const hiddenElements = [];
     selectorsToHide.forEach(selector => {
-        document.querySelectorAll(selector).forEach(function(el) { // Menggunakan Vanilla JS
-            if (el.style.display !== 'none') {
+        document.querySelectorAll(selector).forEach(function(el) {
+            if (el && el.style.display !== 'none') {
                 hiddenElements.push({ element: el, originalDisplay: el.style.display });
                 el.style.display = 'none';
             }
         });
     });
 
-    // Tambahkan kelas ke body untuk mengaktifkan style PDF-friendly
     document.body.classList.add('pdf-export-mode');
 
     try {
-        await new Promise(resolve => setTimeout(resolve, 100)); // Beri waktu browser menerapkan display:none
+        console.log('Starting PDF export...');
+        
+        // ✅ Wait longer for CSS to apply
+        await new Promise(resolve => setTimeout(resolve, 1200));
 
+        console.log('Creating canvas...');
+        
         const canvas = await html2canvas(content, {
             scale: 1.5,
             useCORS: true,
+            allowTaint: false,
             scrollY: -window.scrollY,
-            backgroundColor: '#ffffff', // Pastikan ini warna sederhana
-            logging: true, // Aktifkan logging untuk detail lebih lanjut dari html2canvas
+            scrollX: -window.scrollX,
+            backgroundColor: '#ffffff',
+            logging: false,
+            width: content.scrollWidth,
+            height: content.scrollHeight,
+            onclone: function(clonedDoc) {
+                // ✅ Force PDF mode and override colors
+                clonedDoc.body.classList.add('pdf-export-mode');
+                
+                // ✅ Remove all CSS custom properties that might contain oklch
+                const allElements = clonedDoc.querySelectorAll('*');
+                allElements.forEach(el => {
+                    // Remove transitions and animations
+                    el.style.transition = 'none';
+                    el.style.animation = 'none';
+                    el.style.transform = 'none';
+                    
+                    // Force override color classes with RGB
+                    const classList = Array.from(el.classList);
+                    classList.forEach(className => {
+                        if (className.includes('green-500')) {
+                            if (className.includes('bg-')) el.style.backgroundColor = 'rgb(34, 197, 94)';
+                            if (className.includes('text-')) el.style.color = 'rgb(34, 197, 94)';
+                            if (className.includes('border-')) el.style.borderColor = 'rgb(34, 197, 94)';
+                        }
+                        if (className.includes('white')) {
+                            if (className.includes('bg-')) el.style.backgroundColor = 'rgb(255, 255, 255)';
+                            if (className.includes('text-')) el.style.color = 'rgb(255, 255, 255)';
+                        }
+                        if (className.includes('gray-')) {
+                            if (className.includes('gray-50')) {
+                                if (className.includes('bg-')) el.style.backgroundColor = 'rgb(249, 250, 251)';
+                                if (className.includes('text-')) el.style.color = 'rgb(249, 250, 251)';
+                            }
+                            if (className.includes('gray-200')) {
+                                if (className.includes('border-')) el.style.borderColor = 'rgb(229, 231, 235)';
+                            }
+                            if (className.includes('gray-500')) {
+                                if (className.includes('text-')) el.style.color = 'rgb(107, 114, 128)';
+                            }
+                            if (className.includes('gray-600')) {
+                                if (className.includes('text-')) el.style.color = 'rgb(75, 85, 99)';
+                            }
+                        }
+                    });
+                });
+            }
         });
 
-        const imgData = canvas.toDataURL('image/png');
+        console.log('Canvas created successfully, generating PDF...');
+
+        const imgData = canvas.toDataURL('image/png', 0.95);
         const pdf = new jsPDF('p', 'mm', 'a4');
+        
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
         const imgProps = pdf.getImageProperties(imgData);
         const imgWidth = imgProps.width;
         const imgHeight = imgProps.height;
-        const ratio = Math.min((pdfWidth - 20) / imgWidth, (pdfHeight - 20) / imgHeight);
+        
+        const margin = 10;
+        const availableWidth = pdfWidth - (margin * 2);
+        const availableHeight = pdfHeight - (margin * 2);
+        
+        const widthRatio = availableWidth / imgWidth;
+        const heightRatio = availableHeight / imgHeight;
+        const ratio = Math.min(widthRatio, heightRatio);
+        
         const newWidth = imgWidth * ratio;
         const newHeight = imgHeight * ratio;
         const x = (pdfWidth - newWidth) / 2;
-        const y = 10;
+        const y = margin;
 
-        pdf.addImage(imgData, 'PNG', x, y, newWidth, newHeight);
+        pdf.addImage(imgData, 'PNG', x, y, newWidth, newHeight, '', 'FAST');
+        
         const dateDisplayElement = document.getElementById('dateDisplay');
-        const periodText = dateDisplayElement ? dateDisplayElement.textContent.replace(/[^a-zA-Z0-9]/g, '_') : 'report';
-        pdf.save(`Laporan_ECatering_${periodText}.pdf`);
+        const periodText = dateDisplayElement ? 
+            dateDisplayElement.textContent.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_') : 
+            'report';
+        const timestamp = new Date().toISOString().slice(0, 10);
+        const filename = `Laporan_ECatering_${periodText}_${timestamp}.pdf`;
+        
+        console.log('Saving PDF as:', filename);
+        pdf.save(filename);
+        
+        alert('PDF berhasil diekspor!');
 
     } catch (err) {
-        alert('Gagal mengekspor PDF: ' + err.message);
         console.error("PDF Export Error:", err);
+        
+        let errorMessage = 'Gagal mengekspor PDF: ' + err.message;
+        
+        // ✅ Handle specific oklch error
+        if (err.message.includes('oklch') || err.message.includes('color function')) {
+            errorMessage = 'Error warna CSS terdeteksi. Mencoba refresh halaman...';
+            alert(errorMessage);
+            // Auto refresh as fallback
+            setTimeout(() => window.location.reload(), 2000);
+            return;
+        }
+        
+        alert(errorMessage);
+        
     } finally {
-        hiddenElements.forEach(item => item.element.style.display = item.originalDisplay);
+        hiddenElements.forEach(item => {
+            if (item.element) {
+                item.element.style.display = item.originalDisplay;
+            }
+        });
+        
         document.body.classList.remove('pdf-export-mode');
-        exportButton.innerHTML = originalButtonHTML; // Menggunakan Vanilla JS
-        exportButton.disabled = false; // Menggunakan Vanilla JS
+        exportButton.innerHTML = originalButtonHTML;
+        exportButton.disabled = false;
+        
+        console.log('PDF export process completed.');
     }
 }
 
