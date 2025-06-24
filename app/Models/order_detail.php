@@ -11,6 +11,7 @@ class order_detail extends Model
     protected $table = "order_detail";
     protected $primaryKey = 'order_d_id';
     public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'order_id',
         'product_id',

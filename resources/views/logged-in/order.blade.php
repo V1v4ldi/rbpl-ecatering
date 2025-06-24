@@ -61,7 +61,6 @@
         </div>
     </main>
     @section('script')
-    @include('script.render-cart')
     @include('script.cart-item-get')
     @include('script.order-script')
     @include('script.product-script')

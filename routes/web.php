@@ -73,20 +73,39 @@ Route::post('/order/cancel', [OrderController::class, 'rmorder'])->name('order.c
 /* 
 {{-- PROFILE ROUTE --}}
 */
+Route::get('/admin/profile', [Alluser::class, 'userprofile'])->name('admin.profile')->middleware('auth:admin');
+Route::post('/admin/profile/change/pass', [Alluser::class, 'changePW'])->name('admin.pass')->middleware(['auth:admin']);
+Route::post('/admin/profile/change/prof', [Alluser::class, 'changeProfile'])->name('admin.cred')->middleware(['auth:admin']);
 
-Route::get('/profile', [Alluser::class, 'customerprofile'])->name('cust.profile')->middleware('auth:customer');
+Route::get('/owner/profile', [Alluser::class, 'userprofile'])->name('owner.profile')->middleware('auth:owner');
+Route::post('/owner/profile/change/pass', [Alluser::class, 'changePW'])->name('owner.pass')->middleware(['auth:owner']);
+Route::post('/owner/profile/change/prof', [Alluser::class, 'changeProfile'])->name('owner.cred')->middleware(['auth:owner']);
 
+Route::get('/profile', [Alluser::class, 'userprofile'])->name('cust.profile')->middleware(['auth:customer']);
+Route::post('/profile/change/pass', [Alluser::class, 'changePW'])->name('cust.pass')->middleware(['auth:customer']);
+Route::post('/profile/change/prof', [Alluser::class, 'changeProfile'])->name('cust.cred')->middleware(['auth:customer']);
 /* 
 {{-- ADMIN ROUTE --}}
 */
 
-Route::get('/admin/home', [Alluser::class, 'adminhome'])->name('adminhome')->middleware('auth:admin');
+//tunggal
+Route::get('/admin/resv/{reservasiId}', [Alluser::class, 'getReservation'])->name('Getresv')->middleware('auth:admin');
+Route::get('/admin/order/{orderId}', [Alluser::class, 'getOrder'])->name('Getorder')->middleware('auth:admin');
+//jamak
+Route::get('/admin/resv', [Alluser::class, 'getReservations'])->name('getResv')->middleware('auth:admin');
+Route::get('/admin/order', [Alluser::class, 'getOrders'])->name('getOrders')->middleware('auth:admin');
+//update
+Route::put('/admin/resv/update/{reservasiId}', [Alluser::class, 'updateReservation'])->name('updateResv')->middleware('auth:admin');
+Route::put('/admin/order/update/{orderId}', [Alluser::class, 'updateOrder'])->name('updateOrder')->middleware('auth:admin');
+
+Route::get('/admin/home', [Alluser::class, 'adminhome'])->name('admin.home')->middleware('auth:admin');
 Route::resource('admin/menu', Menucontroller::class)->middleware('auth:admin');
-Route::get('/admin/profile', [Alluser::class, 'adminprofile'])->name('admin.profile')->middleware('auth:admin');
+
 
 /* 
 {{-- OWNER ROUTE --}}
 */
 
-Route::get('/owner/home', [Alluser::class, 'ownerhome'])->name('ownerhome')->middleware('auth:owner');
-Route::get('/owner/profile', [Alluser::class, 'ownerprofile'])->name('owner.profile')->middleware('auth:owner');
+Route::get('/owner/home', [Alluser::class, 'ownerhome'])->name('owner.home')->middleware('auth:owner');
+Route::get('/owner/report-data/{type}/{period}', [Alluser::class, 'getReport'])
+     ->name('owner.reportData')->middleware('auth:owner');

@@ -9,6 +9,7 @@ class cart extends Model
     protected $table = "cart";
     protected $primaryKey = 'cart_id';
     public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'customer_id'
     ];

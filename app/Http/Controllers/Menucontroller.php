@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\product as ModelsProduct;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 
 class Menucontroller extends Controller
 {
@@ -14,6 +15,15 @@ class Menucontroller extends Controller
      */
     public function index()
     {
+        $products = Product::orderBy('nama', 'asc')->get();
+
+        $products->transform(function ($product){
+            $product->enc_id = Crypt::encrypt($product->product_id);
+            unset($product->product_id);
+            return $product;
+        });
+
+        return response()->json($products);
     }
 
     /**
@@ -49,15 +59,24 @@ class Menucontroller extends Controller
             'deskripsi' => $request->deskripsi,
             'imgname' => $imgname,
         ]);
-        return redirect()->route('adminhome');
+        return response()->json(['message' => 'Produk Berhasil Ditambahkan!']);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($produkId)
     {
-        //
+        $product_id = Crypt::decrypt($produkId);
+
+        $product = product::where('product_id', $product_id)->firstOrfail();
+
+        
+        $product->enc_id = Crypt::encrypt($product_id);
+
+        unset($product->product_id);
+
+        return response()->json($product);
     }
 
     /**
@@ -71,16 +90,52 @@ class Menucontroller extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $produkId)
     {
-        //
+       $product_id = Crypt::decrypt($produkId);
+       $product = product::where('product_id', $product_id)->firstOrFail();
+
+        $request->validate([
+            'product_id' => 'required|string',
+            'nama' => 'required|string|max:50',
+            'harga' => 'required',
+            'deskripsi' => 'required',
+            'imgname' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:10000',
+        ]);
+
+        $product->nama = $request->nama;
+        $product->harga = $request->harga;
+        $product->deskripsi = $request->deskripsi;
+
+        // Update gambar jika ada file baru
+        if ($request->hasFile('imgname')) {
+            if ($product->imgname) {
+                Storage::delete('public/product/' . $product->imgname);
+            }
+            
+            $imgname = $request->file('imgname')->store(options: 'product');
+            $product->imgname = $imgname;
+        }
+
+        $product->save();
+
+        return response()->json(['message' => 'Produk Berhasil Diperbarui!']);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($produkId)
     {
-        //
+        $product_id = Crypt::decrypt($produkId);
+
+        $product = product::where('product_id', $product_id)->firstOrfail();
+
+        if ($product->imgname) {
+            Storage::delete('public/product/' . $product->imgname);
+        }
+
+        $product->delete();
+        return response()->json(['message' => 'Produk Berhasil Dihapus!']);
     }
 }

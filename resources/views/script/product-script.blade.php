@@ -1,6 +1,15 @@
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     
+    try {
+        if (typeof window.getcart === 'function') {
+            await window.getcart();
+            console.log('Cart loaded successfully, cart items:', window.cartItems);
+        }
+    } catch (error) {
+        console.warn('Failed to load cart, but continuing with products:', error);
+    }
+
     function handlePaginationClick(event) {
         event.preventDefault();
         
@@ -17,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         loadProducts(url);
     }
     
-    function loadProducts(url) {
+    async function loadProducts(url) {
         document.getElementById('loading-indicator').classList.remove('hidden');
         document.getElementById('products-grid').style.opacity = '0.5';
         
@@ -82,6 +91,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let html = '';
         products.forEach(product => {
+            // Check if item is already in cart
+            const isInCart = typeof window.isItemInCart === 'function' ? window.isItemInCart(product.product_id) : false;
+            
+            // Dynamic button classes and attributes
+            const buttonClass = isInCart 
+                ? 'cursor-not-allowed w-full py-2 bg-gray-400 text-white border border-gray-400 rounded font-medium' 
+                : 'cursor-pointer w-full py-2 border border-[#ff9a00] text-[#ff9a00] hover:bg-[#ff9a00] hover:text-white transition-colors rounded font-medium add-to-cart';
+            
+            const buttonText = isInCart ? 'Sudah di Keranjang' : 'Add to Cart';
+            const buttonDisabled = isInCart ? 'disabled' : '';
+            const dataAttribute = isInCart ? '' : `data-productid="${product.product_id}"`;
+            
             html += `
                 <div class="bg-white rounded-lg overflow-hidden shadow hover:-translate-y-1 transition-transform duration-300 p-2">
                     <div class="h-44 overflow-hidden">
@@ -91,8 +112,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h3 class="font-semibold mb-1">${product.nama}</h3>
                         <p class="text-sm text-gray-600 mb-1">${product.deskripsi}</p>
                         <p class="font-semibold mb-3">Rp. ${new Intl.NumberFormat('id-ID').format(product.harga)}</p>
-                        <button class="cursor-pointer w-full py-2 border border-[#ff9a00] text-[#ff9a00] hover:bg-[#ff9a00] hover:text-white transition-colors rounded font-medium add-to-cart" data-productid="${product.product_id}">
-                            Add to Cart
+                        <button class="${buttonClass}" ${dataAttribute} ${buttonDisabled}>
+                            ${buttonText}
                         </button>
                     </div>
                 </div>
@@ -101,8 +122,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         productsGrid.innerHTML = html;
 
+        // Re-attach event listeners only for enabled buttons
         if (typeof window.addtocart === 'function') {
-            addtocart();
+            window.addtocart();
         }
     }
     

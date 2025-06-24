@@ -9,3 +9,50 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    text-align: center;
+    color: white;
+}
+
+/* Status Pesanan */
+.status-belum-dibayar { background-color: #ef4444; } /* Red */
+.status-sedang-diverifikasi { background-color: #f59e0b; } /* Orange */
+.status-sudah-diverifikasi { background-color: #2196F3; } /* Blue */
+.status-sedang-dibuat { background-color: #8b5cf6; } /* Purple */
+.status-dalam-pengiriman { background-color: #06b6d4; } /* Cyan */
+.status-selesai { background-color: #4CAF50; } /* Green */
+
+.pdf-export-mode body,
+        .pdf-export-mode [class*="text-"], /* Target semua utilitas teks Tailwind */
+        .pdf-export-mode [class*="bg-"],   /* Target semua utilitas background Tailwind */
+        .pdf-export-mode [class*="border-"] /* Target semua utilitas border Tailwind */
+        {
+            /* Hentikan pewarisan variabel CSS yang mungkin mengandung oklch */
+            --tw-text-opacity: 1 !important;
+            --tw-bg-opacity: 1 !important;
+            --tw-border-opacity: 1 !important;
+        }
+        .pdf-export-mode .text-green-500 { color: rgb(34, 197, 94) !important; }
+    .pdf-export-mode .bg-green-500 { background-color: rgb(34, 197, 94) !important; }
+
+    .pdf-export-mode .text-gray-50 { color: rgb(249, 250, 251) !important; }
+    .pdf-export-mode .bg-gray-50 { background-color: rgb(249, 250, 251) !important; }
+    .pdf-export-mode .text-gray-100 { color: rgb(243, 244, 246) !important; }
+    .pdf-export-mode .bg-gray-100 { background-color: rgb(243, 244, 246) !important; }
+    .pdf-export-mode .text-gray-200 { color: rgb(229, 231, 235) !important; }
+    .pdf-export-mode .border-gray-200 { border-color: rgb(229, 231, 235) !important; }
+    .pdf-export-mode .text-gray-300 { color: rgb(209, 213, 219) !important; }
+    .pdf-export-mode .border-gray-300 { border-color: rgb(209, 213, 219) !important; }
+    .pdf-export-mode .text-gray-400 { color: rgb(156, 163, 175) !important; }
+    .pdf-export-mode .text-gray-500 { color: rgb(107, 114, 128) !important; }
+    .pdf-export-mode .text-gray-600 { color: rgb(75, 85, 99) !important; }
+    .pdf-export-mode .text-gray-700 { color: rgb(55, 65, 81) !important; }
+    .pdf-export-mode .text-gray-800 { color: rgb(31, 41, 55) !important; }
+    .pdf-export-mode .text-gray-900 { color: rgb(17, 24, 39) !important; }
+    .pdf-export-mode .bg-white { background-color: #ffffff !important; }
+    .pdf-export-mode .text-white { color: #ffffff !important; }

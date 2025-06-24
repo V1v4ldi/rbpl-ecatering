@@ -34,12 +34,12 @@ class LoginController extends Controller
         elseif(Auth::guard('admin')->attempt($cred)){
             $request->session()->regenerate();
             
-            return redirect()->route('adminhome');
+            return redirect()->route('admin.home');
         }
         elseif(Auth::guard('owner')->attempt($cred)){
             $request->session()->regenerate();
             
-            return redirect()->route('ownerhome');
+            return redirect()->route('owner.home');
         }
         return back()->with('loginError', 'Login Gagal!');
     }

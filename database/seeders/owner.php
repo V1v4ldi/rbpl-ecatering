@@ -19,6 +19,7 @@ class owner extends Seeder
            'name' => 'owner', 
            'email' => 'owner@gmail.com', 
            'password' => bcrypt('owner12345'), 
+           'no_hp' => '081213195278', 
         ]);
     }
 }

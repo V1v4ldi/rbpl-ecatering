@@ -37,10 +37,10 @@ class OrderController extends Controller
     }
 
 
-    public function getorder(Request $request){
+    public function getorder(){
         $customer = auth('customer')->user();
 
-        $orders = order::where('customer_id', $customer->customer_id)->where('status_pesanan', 'Belum Dibayar')->orderBy('created_at')->get();
+        $orders = order::where('customer_id', $customer->customer_id)->where('status_pesanan', 'Belum Dibayar')->orderBy('tanggal_kirim', 'asc')->get();
 
         $orders->transform(function($order){
             $order->encrypted_id = Crypt::encrypt($order->order_id);

@@ -11,6 +11,7 @@ class owner extends Authenticatable
     
     protected $table = 'owner';
     protected $primaryKey = 'owner_id';
+    protected $keyType = 'string';
     protected $fillable = [
         'nama',
         'email',

@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Models\customer;
+use App\Models\order;
 use App\Observers\CustomerObserver;
+use App\Observers\OrderObserver;
 use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Carbon::setLocale('id');
+        order::observe(OrderObserver::class);
     }
 }

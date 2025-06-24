@@ -15,7 +15,6 @@
                     Kembali
                 </div>
             </a>
-            {{-- aman --}}
 
             <div x-data="{daftar: {{ $daftar }}}" x-cloak>
               

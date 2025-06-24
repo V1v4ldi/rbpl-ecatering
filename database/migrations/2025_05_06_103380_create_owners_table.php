@@ -16,9 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('no_hp', length:15);
             $table->enum('role', ['owner'])->default('owner');
-            $table->string('report_id')->nullable();
-            $table->foreign('report_id')->references('report_id')->on('report');
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('owners');
+        Schema::dropIfExists('owner');
     }
 };

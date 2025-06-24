@@ -10,6 +10,8 @@ class admin extends Authenticatable
     //
     protected $table = 'admin';
     protected $primaryKey = 'admin_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'nama', 
         'email',

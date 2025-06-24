@@ -10,6 +10,7 @@ class product extends Model
     protected $table = 'product';
     protected $primaryKey = 'product_id';
     public $incrementing = false;
+    protected $keyType = 'string';
     protected $fillable = [
         'nama',
         'deskripsi',
@@ -17,6 +18,6 @@ class product extends Model
         'imgname'];
 
     public function order_detail(){
-        return $this->hasOne(order_detail::class, 'product_id', 'product_id');
+        return $this->hasMany(order_detail::class, 'product_id', 'product_id');
     }
 }
