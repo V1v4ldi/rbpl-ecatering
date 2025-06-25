@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ $title ?? 'E-Catering'}}</title>
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     @livewireStyles
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <meta name="csrf-token" content="{{ csrf_token() }}">
