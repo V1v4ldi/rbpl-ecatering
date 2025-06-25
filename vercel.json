@@ -19,7 +19,7 @@
         },
         {
             "src": "/img/(.*)",
-            "dest": "/public/img/$1"
+            "dest": "/public/images/$1"
         },
         {
             "src": "/css/(.*)",
