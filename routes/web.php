@@ -21,10 +21,10 @@ Route::get('/catalog', function () {
     return view('catalog', ['title' => 'Catalog'], compact('products'));
 })->name('catalog');
 
-Route::get('/register', [RegisterController::class, 'showregis'])->name('register')->middleware('guest');
+Route::get('/register', [RegisterController::class, 'showregis'])->name('register');
 Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 
-Route::get('/login', [LoginController::class, 'showlogin'])->name('login')->middleware('guest');
+Route::get('/login', [LoginController::class, 'showlogin'])->name('login');
 Route::post('/login', [LoginController::class, 'checklogin'])->name('loggingin');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
