@@ -1,0 +1,82 @@
+# Development dependencies (should be ignored)
+node_modules
+tests
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+
+# Development files
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+.gitattributes
+
+# IDE files
+.vscode
+.idea
+.fleet
+.nova
+.zed
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+/public/hot
+/public/storage
+npm-debug.log
+yarn-error.log
+
+# Documentation
+README.md
+CHANGELOG.md
+docs/
+
+# Configuration files
+docker-compose.yml
+Dockerfile
+.dockerignore
+phpunit.xml
+.phpunit.result.cache
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+
+# Large directories that will be rebuilt
+/bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+
+# Development tools
+.phpactor.json
+.php-cs-fixer.php
+.php-cs-fixer.cache
+```
+
+## **⚠️ PENTING: Jangan ignore `vendor` untuk production!**
+
+**Vercel perlu `vendor` folder** untuk dependencies PHP. Sebaiknya:
+
+### **Option A: Let Vercel build vendor (Recommended)**
+
+````plaintext
+# .vercelignore - DON'T include vendor
+node_modules
+tests
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+.env
+.env.*
+!.env.example
+.git
+README.md
+docs/
