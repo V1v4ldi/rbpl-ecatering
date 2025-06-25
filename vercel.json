@@ -1,21 +1,38 @@
 {
   "version": 2,
-
+  "framework": null,
+  "outputDirectory": "public",
+  "functions": {
+    "api/index.php": {
+      "runtime": "vercel-php@0.7.3"
+    }
+  },
   "builds": [
-    { "src": "public/index.php", "use": "@vercel/php" },
-
     {
-      "src": "vite.config.js",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "public" }
+      "src": "/public/**",
+      "use": "@vercel/static"
     }
   ],
-
   "routes": [
-    { "src": "/storage/(.*)", "dest": "/public/storage/$1" },
+    {
+      "src": "/build/(.*)",
+      "dest": "/public/build/$1"
+    },
+    {
+      "src": "/storage/(.*)",
+      "dest": "/public/storage/$1"
+    },
+
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
 
     { "handle": "filesystem" },
 
-    { "src": "/(.*)", "dest": "/public/index.php" }
-  ]
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.php"
+    }
+  ],
 }
