@@ -8,10 +8,19 @@
     }
   },
   "routes": [
-    { "handle": "filesystem" },
     {
       "src": "/build/(.*)",
       "dest": "/public/build/$1"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    {
+      "src": "/(.*)",
+      "headers": { "cache-control": "s-maxage=1, stale-while-revalidate" },
+      "continue": true,
+      "dest": "/public/$1"
     },
     {
       "src": "/(.*)",
