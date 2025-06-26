@@ -9,13 +9,17 @@
   },
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/api/index.php"
-    },
-    {
       "src": "/build/(.*)",
       "dest": "/public/build/$1"
     },
-    { "handle": "filesystem" }
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    { "handle": "filesystem" },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.php"
+    }
   ]
 }
