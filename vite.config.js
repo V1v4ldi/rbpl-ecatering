@@ -30,4 +30,15 @@ export default defineConfig({
             '$': 'jQuery'
         },
     },
+    build: {
+        outDir: 'public/build', 
+        emptyOutDir: true, 
+        rollupOptions: {
+            output: {               
+                entryFileNames: `assets/[name]-[hash].js`,
+                chunkFileNames: `assets/[name]-[hash].js`,
+                assetFileNames: `assets/[name]-[hash].[ext]`
+            }
+        }
+    }
 });
