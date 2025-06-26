@@ -49,7 +49,7 @@
                         <div class="text-gray-600 text-sm">Total: Rp.${new Intl.NumberFormat('id-ID').format(item.total)}</div>
                     </div>
                     <div class="ml-4">
-                        <button class="py-2 px-4 rounded text-sm cursor-pointer border border-gray-200 bg-white text-gray-600">${item.status_pesanan}</button>
+                        <a href="payment/status/${item.encrypted_id}" class="py-2 px-4 rounded text-sm cursor-pointer border border-gray-200 bg-white text-gray-600">${item.status_pesanan}</a>
                     </div>
                 </div>
             </div>`;

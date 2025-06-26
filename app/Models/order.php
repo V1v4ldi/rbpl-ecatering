@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\customer;
+use App\Models\order_detail;
 use Illuminate\Database\Eloquent\Model;
 
 class order extends Model
@@ -46,7 +47,7 @@ class order extends Model
     // Accessor untuk format tanggal
     public function getTanggalFormatAttribute()
     {
-        return \Carbon\Carbon::parse($this->created_at)->translatedFormat('j F Y');
+        return \Carbon\Carbon::parse($this->tanggal_kirim)->translatedFormat('j F Y');
     }
 
     // Accessor untuk format waktu

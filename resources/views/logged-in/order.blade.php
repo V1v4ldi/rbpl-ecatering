@@ -40,7 +40,7 @@
             </div>
 
             <div class="mb-4">
-                <label for="delivery-quantity" class="block mb-1 font-medium">Jumlah Catering</label>
+                <label for="delivery-quantity" class="block mb-1 font-medium">Jumlah Catering (Minimal 50)</label>
                 <input type="number" id="delivery-quantity" class="w-full p-2 border border-gray-200 rounded">
             </div>
             

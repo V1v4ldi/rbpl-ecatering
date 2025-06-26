@@ -22,7 +22,8 @@ class OrderController extends Controller
     }
 
     public function getdate(){
-        $bookedDates = Order::pluck('tanggal_kirim')
+        $bookedDates = Order::whereNot('status_pesanan', 'Dibatalkan')
+                            ->pluck('tanggal_kirim')
                             ->map(function($date) {
                                 return is_string($date) ? $date : $date->format('Y-m-d');
                             })
@@ -134,7 +135,37 @@ class OrderController extends Controller
     }
     
     public function rmorder(Request $request){
-        
+        $customer = auth('customer')->user();
+
+        // Temukan pesanan dan pastikan pesanan tersebut milik customer yang sedang login
+        $order = order::where('order_id', $request->order_id)
+                       ->where('customer_id', $customer->customer_id)
+                       ->first();
+
+        // Jika pesanan tidak ditemukan atau bukan milik customer, kirim error
+        if (!$order) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Pesanan tidak ditemukan atau Anda tidak memiliki akses.'
+            ], 404);
+        }
+
+        // Periksa apakah status pesanan memungkinkan untuk dibatalkan
+        $cancellableStatuses = ['Belum Dibayar', 'Sedang Diverifikasi'];
+        if (!in_array($order->status_pesanan, $cancellableStatuses)) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Pesanan ini sudah dalam proses dan tidak dapat dibatalkan lagi.'
+            ], 422); // 422 Unprocessable Entity
+        }
+
+        $order->status_pesanan = 'Dibatalkan';
+        $order->save();
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'Pesanan telah berhasil dibatalkan.'
+        ]);
     }
     
     public function mkdorder(Authenticatable $customer, order $order){

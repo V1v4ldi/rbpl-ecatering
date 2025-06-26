@@ -20,7 +20,7 @@
                 'Sedang Dibuat': 'status-sedang-dibuat',
                 'Dalam Pengiriman': 'status-dalam-pengiriman',
                 'Selesai': 'status-selesai',
-                'Batal': 'status-batal'
+                'Dibatalkan': 'status-batal'
             };
             return statusMap[status] || 'status-badge';
         }
@@ -144,6 +144,7 @@
                                 <button class="detail-pesanan-btn bg-gray-200 w-[80px] h-[25px] text-black rounded-[6px] cursor-pointer hover:bg-gray-400 hover:text-white duration-300" data-name="${order.customer.name}" data-id="${order.enc_id}">Detail</button>
                                 <select  class="px-3 cursor-pointer bg-[#ff9a00] text-white update-status-pesanan w-auto h-[25px] text-xs border-gray-300 rounded-[6px] hover:bg-[#d68100] duration-300" data-id="${order.enc_id}">
                                     <option disabled selected style="display:none">Update</option>
+                                    <option value="Dibatalkan">Batal</option>
                                     <option value="Sedang Dibuat">Dibuat</option>
                                     <option value="Dalam Pengiriman">Dikirim</option>
                                     <option value="Selesai">Selesai</option>
@@ -328,22 +329,63 @@
             });
 
             // --- Event Listeners untuk Pesanan ---
-            $('#pesananList').on('click', '.detail-pesanan-btn', function() {
+             $('#pesananList').on('click', '.detail-pesanan-btn', function() {
                 const orderId = $(this).data('id');
                 const orderName = $(this).data('name')
                 $('#detailModalTitle').text('Detail Pesanan: ' + orderName);
-                $('#detailModalContent').html('Memuat detail...');
+                $('#detailModalContent').html('<p class="text-center">Memuat detail...</p>');
                 $('#detailModal').show();
-                $.get(`/admin/order/${orderId}`, function(data) { // Sesuaikan URL
+                $.get(`/admin/order/${orderId}`, function(data) {
+                    // --- DESAIN BARU YANG LEBIH BAIK ---
                     let content = `
-                    <p><strong>Lokasi:</strong> ${data.alamat || '-'}</p>
-                   <p><strong>Tanggal Kirim:</strong> ${formatDate(data.tanggal_kirim)} ${data.waktu || '-'}</p>
-                   <p><strong>Jumlah Pesanan:</strong> ${data.jumlah || '-'}</p>
-                   <p><strong>Total Biaya:</strong> ${formatRupiah(data.total || 0)}</p>
-                   <p><strong>Status Reservasi:</strong> ${data.status_pesanan}</p>
-                   <p><strong>Catatan:</strong> ${data.catatan || '-'}</p>`;
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Lokasi Pengiriman:</span>
+                                <span class="text-gray-800 text-right">${data.alamat || '-'}</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Waktu Pengiriman:</span>
+                                <span class="text-gray-800">${formatDate(data.tanggal_kirim)} ${data.waktu || ''}</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Jumlah Pesanan:</span>
+                                <span class="text-gray-800">${data.jumlah || '-'} Porsi</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Metode Pembayaran:</span>
+                                <span class="text-gray-800 font-medium">${data.payment_method}</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Status Pesanan:</span>
+                                <span class="status-badge ${getStatusClass(data.status_pesanan)}">${data.status_pesanan}</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Catatan:</span>
+                                <span class="text-gray-800 text-right">${data.catatan || '-'}</span>
+                            </div>
+                            <div class="flex justify-between pt-2 text-base">
+                                <span class="font-bold text-gray-700">Total Biaya:</span>
+                                <span class="font-bold text-[#ff9a00]">${formatRupiah(data.total || 0)}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // --- LOGIKA UNTUK MENAMPILKAN GAMBAR ---
+                    if (data.payment_method === 'Transfer' && data.payment_proof_url) {
+                        content += `
+                            <div class="mt-6 pt-4 border-t">
+                                <h4 class="font-semibold text-gray-700 mb-2">Bukti Pembayaran:</h4>
+                                    <div class="flex justify-center">
+                                        <a href="${data.payment_proof_url}" target="_blank" title="Klik untuk melihat ukuran penuh">
+                                            <img src="${data.payment_proof_url}" alt="Bukti Pembayaran" class="rounded-lg max-w-full h-[300px] shadow-md">
+                                        </a>
+                                    </div>
+                            </div>
+                        `;
+                    }
+
                     $('#detailModalContent').html(content);
-                }).fail(function() { $('#detailModalContent').html('Gagal memuat detail.'); });
+                }).fail(function() { $('#detailModalContent').html('<p class="text-center text-red-500">Gagal memuat detail.</p>'); });
             });
 
             $('#pesananList').on('change', '.update-status-pesanan', function() {
@@ -382,18 +424,59 @@
                 const reservasiId = $(this).data('id');
                 const reservasiName = $(this).data('name');
                 $('#detailModalTitle').text('Detail Reservasi: ' + reservasiName);
-                $('#detailModalContent').html('Memuat detail...');
+                $('#detailModalContent').html('<p class="text-center">Memuat detail...</p>');
                 $('#detailModal').show();
                  $.get(`/admin/resv/${reservasiId}`, function(data) {
+                    // --- DESAIN BARU YANG LEBIH BAIK ---
                     let content = `
-                    <p><strong>Lokasi:</strong> ${data.alamat || '-'}</p>
-                   <p><strong>Tanggal Kirim:</strong> ${formatDate(data.tanggal_kirim)} ${data.waktu || '-'}</p>
-                   <p><strong>Jumlah Pesanan:</strong> ${data.jumlah || '-'}</p>
-                   <p><strong>Total Biaya:</strong> ${formatRupiah(data.total || 0)}</p>
-                   <p><strong>Status Reservasi:</strong> ${data.status_pesanan}</p>
-                   <p><strong>Catatan:</strong> ${data.catatan || '-'}</p>`;
-                        $('#detailModalContent').html(content);
-                }).fail(function() { $('#detailModalContent').html('Gagal memuat detail.'); });
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Lokasi Acara:</span>
+                                <span class="text-gray-800 text-right">${data.alamat || '-'}</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Tanggal Acara:</span>
+                                <span class="text-gray-800">${formatDate(data.tanggal_kirim)} ${data.waktu || ''}</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Jumlah Tamu:</span>
+                                <span class="text-gray-800">${data.jumlah || '-'} Orang</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Metode Pembayaran:</span>
+                                <span class="text-gray-800 font-medium">${data.payment_method}</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Status Reservasi:</span>
+                                <span class="status-badge ${getStatusClass(data.status_pesanan)}">${data.status_pesanan}</span>
+                            </div>
+                            <div class="flex justify-between border-b pb-2">
+                                <span class="font-semibold text-gray-600">Catatan:</span>
+                                <span class="text-gray-800 text-right">${data.catatan || '-'}</span>
+                            </div>
+                            <div class="flex justify-between pt-2 text-base">
+                                <span class="font-bold text-gray-700">Total Biaya:</span>
+                                <span class="font-bold text-[#ff9a00]">${formatRupiah(data.total || 0)}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    // --- LOGIKA UNTUK MENAMPILKAN GAMBAR ---
+                    if (data.payment_method === 'Transfer' && data.payment_proof_url) {
+                        content += `
+                            <div class="mt-6 pt-4 border-t">
+                                <h4 class="font-semibold text-gray-700 mb-2">Bukti Pembayaran:</h4>
+                                    <div class="flex justify-center">
+                                        <a href="${data.payment_proof_url}" target="_blank" title="Klik untuk melihat ukuran penuh">
+                                            <img src="${data.payment_proof_url}" alt="Bukti Pembayaran" class="rounded-lg max-w-full h-[300px] shadow-md">
+                                        </a>
+                                    </div>
+                            </div>
+                        `;
+                    }
+
+                    $('#detailModalContent').html(content);
+                }).fail(function() { $('#detailModalContent').html('<p class="text-center text-red-500">Gagal memuat detail.</p>'); });
             });
 
             $('#reservasiList').on('click', '.update-status-reservasi', function() {

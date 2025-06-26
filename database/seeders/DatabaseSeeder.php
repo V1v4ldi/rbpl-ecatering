@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
             customer::class,
             admin::class,
             owner::class,
-            product::class
         ]);
     }
 }

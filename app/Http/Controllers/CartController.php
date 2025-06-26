@@ -59,7 +59,7 @@ class CartController extends Controller
     public function getOrder(){
         $customer = auth('customer')->user();
 
-        $orders = order::where('customer_id', $customer->customer_id)->whereIn('status_pesanan', ['Sudah Diverifikasi','Sedang Dibuat','Dalam Pengiriman'])->orderBy('tanggal_kirim', 'asc')->get();
+        $orders = order::where('customer_id', $customer->customer_id)->whereIn('status_pesanan', ['Sedang Diverifikasi', 'Sudah Diverifikasi','Sedang Dibuat','Dalam Pengiriman'])->orderBy('tanggal_kirim', 'asc')->get();
 
         $orders->transform(function($order){
             $order->tanggal_kirim = $order->tanggal_format;

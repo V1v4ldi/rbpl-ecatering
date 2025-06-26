@@ -44,11 +44,15 @@
     <div class="flex flex-col md:flex-row gap-6">
         <!-- Left column -->
         <div class="flex-1">
+            <form id="payment-form" action="{{ route('payment.confirm', $order->enc_id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+
+            <input type="hidden" name="payment_method" id="payment_method_input" value="transfer">
             <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
                 <h2 class="text-xl font-semibold mb-6 pb-2 border-b-2 border-[#ff9a00] inline-block">Pembayaran</h2>
                 
                 <!-- Timer -->
-                <div class="bg-amber-50 rounded-lg p-5 text-center mb-6">
+                <div class="bg-amber-50 rounded-lg p-5 text-center mb-6" id="time-limit">
                     <h3 class="text-sm font-medium mb-4 text-primary">Batas Waktu Pembayaran</h3>
                     <div class="flex justify-center gap-4">
                         <div class="flex flex-col items-center ">
@@ -80,6 +84,12 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Contact Admin --}}
+                <div id="wa-admin-info" class="hidden mt-4 p-4 bg-green-50 border border-green-100 rounded-lg text-center">
+                    <p class="text-sm text-gray-700">Untuk konfirmasi pesanan, silakan hubungi admin via WhatsApp:</p>
+                    <p class="font-bold text-lg mt-2"><a href="https://wa.me/6281234567890" target="_blank" class="text-green-500 no-underline">+62 812-3456-7890</a></p>
+                </div>
                 
                 <!-- Bank Selection -->
                 <div class="mb-6" id="bank-selection">
@@ -104,18 +114,17 @@
                     </div>
                     
                     <!-- Bank Details -->
-                    <div class="bg-gray-50 border-l-3 border-[#ff9a00] p-4 mb-6">
-                        <div class="flex justify-between mb-3">
-                            <div class="font-medium">Bank:</div>
-                            <div id="bank-name">BCA</div>
-                        </div>
-                        <div class="flex justify-between mb-3">
-                            <div class="font-medium">No. Rekening:</div>
-                            <div class="flex items-center">
-                                8790123456
-                                <button class="cursor-pointer bg-gray-200 text-sm px-2 py-0.5 rounded ml-2 hover:bg-gray-300 " onclick="copyToClipboard('')">Salin</button>
+                        <div class="bg-gray-50 border-l-3 border-[#ff9a00] p-4 mb-6">
+                            <div class="flex justify-between mb-3">
+                                <div class="font-medium">Bank:</div>
+                                <div id="bank-name">BCA</div>
                             </div>
-                        </div>
+                            <div class="flex justify-between mb-3">
+                                <div class="font-medium">No. Rekening:</div>
+                                <div class="flex items-center" id="account-number-display">
+                                    <!-- Akan diisi JS -->
+                                </div>
+                            </div>
                         <div class="flex justify-between mb-3">
                             <div class="font-medium">Atas Nama:</div>
                             <div>PT E-Catering Indonesia</div>
@@ -131,27 +140,47 @@
                 </div>
                 
                 <!-- Upload Section -->
-                <div class="mt-6">
+                <div class="mt-6" id="upload-section">
                     <h3 class="font-semibold mb-1">Unggah Bukti Pembayaran</h3>
                     <p class="text-xs text-gray-600 mb-4">Silakan unggah bukti transfer Anda untuk verifikasi pembayaran</p>
                     
+                    {{-- UBAH BAGIAN INI --}}
                     <div class="border-2 border-dashed border-gray-200 rounded-lg p-8 text-center cursor-pointer mb-4" onclick="document.getElementById('file-upload').click()">
-                        <div class="text-gray-500 mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                <polyline points="17 8 12 3 7 8"></polyline>
-                                <line x1="12" y1="3" x2="12" y2="15"></line>
-                            </svg>
+                        
+                        {{-- 1. Tampilan Awal (Sebelum Upload) --}}
+                        <div id="upload-prompt">
+                            <div class="text-gray-500 mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4">Klik atau seret file bukti pembayaran di sini</p>
+                            <button type="button" class="bg-[#ff9a00] text-white px-6 py-2 rounded font-medium cursor-pointer hover:bg-primary-dark">Pilih File</button>
                         </div>
-                        <p class="text-sm text-gray-600 mb-4">Klik atau seret file bukti pembayaran di sini</p>
-                        <button class="bg-[#ff9a00] text-white px-6 py-2 rounded font-medium cursor-pointer hover:bg-primary-dark">Pilih File</button>
-                        <input type="file" id="file-upload" class="hidden">
+
+                        {{-- 2. Tampilan Setelah Upload (Awalnya Disembunyikan) --}}
+                        <div id="file-preview" class="hidden">
+                             <div class="text-green-500 mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                    <polyline points="14 2 14 8 20 8"></polyline>
+                                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                                </svg>
+                            </div>
+                            <p class="text-sm text-gray-800 font-medium mb-4" id="file-name-display"></p>
+                            <button type="button" class="bg-gray-200 text-gray-800 px-6 py-2 rounded font-medium cursor-pointer hover:bg-gray-300">Ganti File</button>
+                        </div>
+
+                        <input type="file" id="file-upload" name="payment_proof" class="hidden">
                     </div>
                     
                     <p class="text-xs text-gray-500 text-center">Format yang diterima: JPG, PNG, PDF. Maksimal 5MB</p>
                 </div>
                 
-                <button class="w-full bg-[#ff9a00] text-white py-4 rounded-lg font-semibold mt-6 hover:bg-primary-dark cursor-pointer transition-colors">Konfirmasi Pembayaran</button>
+                <button type="submit" class="w-full bg-[#ff9a00] text-white py-4 rounded-lg font-semibold mt-6 hover:bg-primary-dark cursor-pointer transition-colors">Konfirmasi Pembayaran</button>
             </div>
         </div>
         
@@ -210,7 +239,10 @@
                         <div>{{ $order->catatan }}</div>
                     </div>
                 </div>
-                <button onclick="window.location.href='{{ route('checkout') }}'" class="cursor-pointer w-full bg-gray-200 text-gray-800 py-4 rounded-lg font-medium mt-6 hover:bg-gray-300 transition-colors">Kembali Ke Keranjang</button>
+                <button type="button" onclick="window.location.href='{{ route('checkout') }}'" class="cursor-pointer w-full bg-gray-200 text-gray-800 py-4 rounded-lg font-medium mt-6 hover:bg-gray-300 transition-colors">Kembali Ke Keranjang</button>
+                <button type="button" id="cancel-order-btn" data-order-id="{{ $order->order_id }}" class="w-full bg-red-600 text-white py-3 rounded-lg font-semibold mt-2 hover:bg-red-700 cursor-pointer transition-colors">
+                    Batalkan Pesanan
+                </button>
             </div> 
         </div> 
     </div> 

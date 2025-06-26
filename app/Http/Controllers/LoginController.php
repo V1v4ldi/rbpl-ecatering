@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 
 class LoginController extends Controller
@@ -15,14 +16,22 @@ class LoginController extends Controller
     }
     
     public function checklogin(Request $request){
-        $validated = $request->validate([
+        $validator = Validator::make($request->all(), [
             'e-mail' => 'required|email',
             'pw' => 'required|min:8'
         ]);
 
+        // 3. Cek jika validasi GAGAL
+        if ($validator->fails()) {
+            // 4. Kembalikan dengan SATU pesan error custom yang sama
+            return back()
+                ->with('loginError', 'Format email atau password salah.')
+                ->withInput($request->only('e-mail')); // Mengembalikan input email agar tidak perlu ketik ulang
+        }
+
         $cred = [
-            'email' => $validated['e-mail'],
-            'password' => $validated['pw'],
+            'email' => $request->input('e-mail'),
+            'password' => $request->input('pw'),
         ];
         
         if(Auth::guard('customer')->attempt($cred)){
@@ -41,7 +50,7 @@ class LoginController extends Controller
             
             return redirect()->route('owner.home');
         }
-        return back()->with('loginError', 'Login Gagal!');
+        return back()->with('loginError', 'Pengguna tidak terdaftar atau password salah.');
     }
 
     public function logout(Request $request){

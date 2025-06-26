@@ -286,6 +286,58 @@
     let currentSelectedMonth = currentActualMonth; // 0-indexed
     let period = ''; // Akan di-set oleh updatePeriodString
 
+    let allOrdersData = [];
+    let currentPage = 1;
+    const itemsPerPage = 5;
+
+    function renderTablePage() {
+        const $tb = $('#ordersTableBody').empty();
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageOrders = allOrdersData.slice(startIndex, endIndex);
+
+        if (pageOrders.length > 0) {
+            pageOrders.forEach(o => {
+                $tb.append(
+                    `<tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${o.date}</td>
+                        <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${o.customer}</td>
+                        <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${o.menu}</td>
+                        <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${formatCurrency(o.subtotal)}</td>
+                        <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${formatCurrency(o.discount)}</td>
+                        <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${formatCurrency(o.total)}</td>
+                        <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${o.status}</td>
+                    </tr>`
+                );
+            });
+        } else {
+            $tb.append('<tr><td colspan="7" class="py-10 px-4 text-center text-gray-500">Tidak ada data pesanan untuk periode ini.</td></tr>');
+        }
+    }
+
+    // --- FUNGSI BARU UNTUK UPDATE KONTROL PAGINASI ---
+    function updatePaginationControls() {
+        const totalPages = Math.ceil(allOrdersData.length / itemsPerPage);
+        const paginationContainer = $('#paginationInfo').parent();
+
+        if (totalPages <= 1) {
+            paginationContainer.hide();
+            return;
+        }
+        
+        paginationContainer.show();
+        $('#paginationInfo').text(`Halaman ${currentPage} dari ${totalPages}`);
+        $('#prevPage').prop('disabled', currentPage === 1).toggleClass('opacity-50 cursor-not-allowed', currentPage === 1);
+        $('#nextPage').prop('disabled', currentPage === totalPages).toggleClass('opacity-50 cursor-not-allowed', currentPage === totalPages);
+
+        // Update tombol angka (opsional, tapi bagus)
+        $('.pageBtn').each(function() {
+            const pageNum = $(this).data('page');
+            $(this).toggleClass('bg-green-500 text-white', pageNum === currentPage)
+                   .toggleClass('border-gray-300', pageNum !== currentPage);
+        });
+    }
+
     function updatePeriodString() {
         period = (view === 'monthly')
             ? `${currentSelectedYear}-${String(currentSelectedMonth + 1).padStart(2, '0')}`
@@ -296,6 +348,7 @@
         updatePeriodString();
         $('#loadingOverlay').show();
         $.getJSON(`/owner/report-data/${view}/${period}`, function(data) {
+            // ... (Update statistik, chart, dll. tetap sama) ...
             $('#totalRevenue').text(formatCurrency(data.totalRevenue));
             $('#totalOrders').text(data.totalOrders);
             $('#avgOrder').text(formatCurrency(data.avgOrder));
@@ -313,28 +366,20 @@
             const chartTitle = `Grafik Pendapatan ${data.reportTypeForTitle} (${data.displayPeriodForTitle})`;
             updateChart(chartTitle, data.labels, data.values);
 
-            const $tb = $('#ordersTableBody').empty();
+            // --- LOGIKA BARU DI SINI ---
+            allOrdersData = data.orders || []; // Simpan semua data
+            currentPage = 1; // Reset ke halaman pertama setiap kali load data baru
+
+            renderTablePage(); // Render halaman pertama
+            updatePaginationControls(); // Update tombol paginasi
+
+            // Hitung total untuk footer dari SEMUA data, bukan hanya per halaman
             let sumSub = 0, sumDisc = 0, sumTot = 0;
-            if (data.orders && data.orders.length > 0) {
-                data.orders.forEach(o => {
-                    sumSub += parseFloat(o.subtotal) || 0;
-                    sumDisc += parseFloat(o.discount) || 0;
-                    sumTot += parseFloat(o.total) || 0;
-                    $tb.append(
-                        `<tr class="border-b border-gray-200 hover:bg-gray-50">
-                            <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${o.date}</td>
-                            <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${o.customer}</td>
-                            <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${o.menu}</td>
-                            <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${formatCurrency(o.subtotal)}</td>
-                            <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${formatCurrency(o.discount)}</td>
-                            <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${formatCurrency(o.total)}</td>
-                            <td class="py-3 px-4 text-left font-semibold text-gray-600 tracking-wider">${o.status}</td>
-                        </tr>`
-                    );
-                });
-            } else {
-                $tb.append('<tr><td colspan="7" class="py-10 px-4 text-center text-gray-500">Tidak ada data pesanan untuk periode ini.</td></tr>');
-            }
+            allOrdersData.forEach(o => {
+                sumSub += parseFloat(o.subtotal) || 0;
+                sumDisc += parseFloat(o.discount) || 0;
+                sumTot += parseFloat(o.total) || 0;
+            });
 
             $('#tableFoot').html(
                 `<tr>
@@ -365,12 +410,45 @@
         });
     }
 
+    function initializeReportPage() {
+        $('#loadingOverlay').show();
+        // Panggil endpoint baru untuk mendapatkan periode terbaru
+        $.getJSON('{{ route("owner.latestPeriod") }}')
+            .done(function(data) {
+                // Jika berhasil, atur state berdasarkan respons server
+                const periodParts = data.latest_period.split('-');
+                currentSelectedYear = parseInt(periodParts[0], 10);
+                
+                view = data.latest_type;
+                if (view === 'monthly') {
+                    currentSelectedMonth = parseInt(periodParts[1], 10) - 1; // -1 karena bulan 0-indexed
+                }
+                
+                // Update tampilan tombol (monthly/yearly)
+                if(view === 'yearly'){
+                    $('#yearlyBtn').click();
+                } else {
+                    $('#monthlyBtn').click();
+                }
+
+            })
+            .fail(function() {
+                // Jika gagal, gunakan tanggal hari ini sebagai fallback (perilaku lama)
+                console.error("Gagal mendapatkan periode laporan terbaru. Menggunakan tanggal saat ini.");
+                currentSelectedYear = currentActualYear;
+                currentSelectedMonth = currentActualMonth;
+                view = 'monthly';
+            })
+            .always(function() {
+                // Setelah mendapatkan periode yang benar, panggil loadReport
+                loadReport();
+            });
+    }
+
     window.addEventListener('DOMContentLoaded', function() {
         $('#monthlyBtn').click(function() {
             if (view === 'monthly') return;
             view = 'monthly';
-            currentSelectedYear = currentActualYear; // Reset ke tahun saat ini
-            currentSelectedMonth = currentActualMonth; // Reset ke bulan saat ini
             $(this).addClass('bg-green-500 text-white').removeClass('bg-white border-gray-300 text-gray-700 hover:bg-gray-50').attr('aria-pressed', 'true');
             $('#yearlyBtn').removeClass('bg-green-500 text-white').addClass('bg-white border-gray-300 text-gray-700 hover:bg-gray-50').attr('aria-pressed', 'false');
             loadReport();
@@ -379,42 +457,67 @@
         $('#yearlyBtn').click(function() {
             if (view === 'yearly') return;
             view = 'yearly';
-            currentSelectedYear = currentActualYear; // Reset ke tahun saat ini
             $(this).addClass('bg-green-500 text-white').removeClass('bg-white border-gray-300 text-gray-700 hover:bg-gray-50').attr('aria-pressed', 'true');
             $('#monthlyBtn').removeClass('bg-green-500 text-white').addClass('bg-white border-gray-300 text-gray-700 hover:bg-gray-50').attr('aria-pressed', 'false');
             loadReport();
         });
 
+        // --- TAMBAHKAN EVENT LISTENER YANG HILANG DI SINI ---
         $('#prevBtn').click(function() {
             if (view === 'monthly') {
                 currentSelectedMonth--;
                 if (currentSelectedMonth < 0) {
-                    currentSelectedMonth = 11;
+                    currentSelectedMonth = 11; // Kembali ke Desember
                     currentSelectedYear--;
                 }
-            } else {
+            } else { // yearly
                 currentSelectedYear--;
             }
-            // Tambahkan batasan historis jika perlu, misal: if (currentSelectedYear < 2020) return;
             loadReport();
         });
 
         $('#nextBtn').click(function() {
-            if ($(this).prop('disabled')) return; // Jangan lakukan apa-apa jika tombol disabled
+            if ($(this).prop('disabled')) return; // Jangan lakukan apa-apa jika tombol dinonaktifkan
             if (view === 'monthly') {
                 currentSelectedMonth++;
                 if (currentSelectedMonth > 11) {
-                    currentSelectedMonth = 0;
+                    currentSelectedMonth = 0; // Kembali ke Januari
                     currentSelectedYear++;
                 }
-            } else {
+            } else { // yearly
                 currentSelectedYear++;
             }
             loadReport();
         });
 
-        $('#exportBtn').click(exportToPDF);
+        $('#prevPage').click(function() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTablePage();
+                updatePaginationControls();
+            }
+        });
 
+        $('#nextPage').click(function() {
+            const totalPages = Math.ceil(allOrdersData.length / itemsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTablePage();
+                updatePaginationControls();
+            }
+        });
+
+        $('.pageBtn').click(function() {
+            const pageNum = $(this).data('page');
+            const totalPages = Math.ceil(allOrdersData.length / itemsPerPage);
+            if (pageNum >= 1 && pageNum <= totalPages) {
+                currentPage = pageNum;
+                renderTablePage();
+                updatePaginationControls();
+            }
+        });
+
+        $('#exportBtn').click(exportToPDF);
     });
-    window.addEventListener('load', function(){loadReport();});
+    window.addEventListener('load', function(){initializeReportPage();});
 </script>

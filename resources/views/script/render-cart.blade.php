@@ -14,7 +14,7 @@
                     const itemElement= `
                     <div class="bg-white rounded-lg p-5 mb-4 shadow-sm border flex items-center gap-5 border-gray-200">
                             <div class="w-16 h-16 flex-shrink-0 ">
-                            <img src="storage/product/${item.product.imgname}" alt="Rendang Daging Sapi" class="w-full h-full rounded-[6px] object-cover">
+                            <img src="${item.product.image_url}" alt="Rendang Daging Sapi" class="w-full h-full rounded-[6px] object-cover">
                             </div>
                         <div class="flex-grow">
                             <div class="font-medium mb-1">${item.product.nama}</div>

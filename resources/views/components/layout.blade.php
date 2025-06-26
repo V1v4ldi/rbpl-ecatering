@@ -21,7 +21,7 @@
             -moz-appearance: textfield;
         }
         .swal2-container {
-        z-index: 10000 !important; /* Pastikan toast berada di atas elemen lain */
+        z-index: 100000 !important; /* Pastikan toast berada di atas elemen lain */
         }
         [x-cloak]{
             display: none;

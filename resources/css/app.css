@@ -20,6 +20,7 @@
 }
 
 /* Status Pesanan */
+.status-batal { background-color: #ef4444; } /* Red */
 .status-belum-dibayar { background-color: #ef4444; } /* Red */
 .status-sedang-diverifikasi { background-color: #f59e0b; } /* Orange */
 .status-sudah-diverifikasi { background-color: #2196F3; } /* Blue */

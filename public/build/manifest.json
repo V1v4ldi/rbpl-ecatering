@@ -1,12 +1,16 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CW7fjLz9.css",
+    "file": "assets/app-ChWER4eb.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/images/Alogin.jpeg": {
     "file": "assets/Alogin-CI8A8r0d.jpeg",
     "src": "resources/images/Alogin.jpeg"
+  },
+  "resources/images/Login_image.png": {
+    "file": "assets/Login_image-CX-nqZV9.png",
+    "src": "resources/images/Login_image.png"
   },
   "resources/images/a-login.png": {
     "file": "assets/a-login-DwOv7dL8.png",

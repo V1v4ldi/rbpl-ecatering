@@ -48,8 +48,10 @@ class Menucontroller extends Controller
         
         if($request->hasFile('image')){
             $cloudinary = new Cloudinary(env("CLOUDINARY_URL"));
-            $uploadApi =  $cloudinary->uploadApi();
-            $result = $uploadApi->upload($request->file('image')->getRealPath());
+            $result = $cloudinary->uploadApi()->upload(
+                $request->file('image')->getRealPath(),
+                ['folder' => 'products']
+            );
 
             $url = $result['secure_url'];
             $public_id = $result['public_id'];

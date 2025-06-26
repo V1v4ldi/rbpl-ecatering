@@ -49,9 +49,6 @@ Route::get('/home', function(){
 })->name('home')->middleware('auth:customer');
 
 
-Route::get('/recipt', function () {
-    return view('logged-in.recipt', ['title' => 'E-Catering']);
-})->name('recipt');
 
 /* 
 {{-- CART ROUTE --}}
@@ -68,12 +65,14 @@ Route::get('/cart/orders/done', [CartController::class, 'getOrderDone'])->name('
 {{-- ORDER & PRODUCT & PAYMENT ROUTE --}}
 */
 Route::get('/payment/{encrypted_id}', [PaymentController::class, 'show'])->name('payment')->middleware('auth:customer');
+Route::post('/payment/{encrypted_id}/confirm', [PaymentController::class, 'confirmPayment'])->name('payment.confirm')->middleware('auth:customer');
+Route::get('/payment/status/{encrypted_id}', [PaymentController::class, 'getRecipt'])->name('order.status')->middleware('auth:customer');
 
 Route::get('/product/get', [ProductController::class, 'getproductspaginated'])->name('product.get');
 Route::get('/order', [OrderController::class, 'page'])->name('order')->middleware('auth:customer');
 Route::get('/order/date', [OrderController::class, 'getdate'])->name('order.get.date')->middleware('auth:customer');
 Route::post('/order/create', [OrderController::class, 'mkorder'])->name('order.create')->middleware('auth:customer');
-Route::post('/order/cancel', [OrderController::class, 'rmorder'])->name('order.cancel')->middleware('auth:customer');
+Route::post('/order/cancel/{order_id}', [OrderController::class, 'rmorder'])->name('order.cancel')->middleware('auth:customer');
 
 /* 
 {{-- PROFILE ROUTE --}}
@@ -112,5 +111,7 @@ Route::resource('admin/menu', Menucontroller::class)->middleware('auth:admin');
 */
 
 Route::get('/owner/home', [Alluser::class, 'ownerhome'])->name('owner.home')->middleware('auth:owner');
+Route::get('/owner/latest-report-period', [Alluser::class, 'getLatestReportPeriod'])
+     ->name('owner.latestPeriod')->middleware('auth:owner');
 Route::get('/owner/report-data/{type}/{period}', [Alluser::class, 'getReport'])
      ->name('owner.reportData')->middleware('auth:owner');

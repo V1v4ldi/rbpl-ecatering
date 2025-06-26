@@ -2,7 +2,10 @@
     <x-slot:title>{{ $title }}</x-slot:title>
     <div class="min-h-screen w-full flex justify-center items-center bg-gray-100 relative">
         <!-- Background Food Image -->
-        <div class="absolute inset-0 z-0 bg-cover bg-center filter brightness-90"></div>
+        <div 
+            class="absolute inset-0 z-0 bg-cover bg-center filter brightness-90" 
+            style="background-image: url('{{ Vite::asset('resources/images/Login_image.png') }}')">
+        </div>
 
          <!-- Registration Card -->
        <div class="w-full max-w-md bg-gray-50 rounded-xl shadow-lg p-8 z-10 mx-4 md:mx-0 relative lg:mb-0 mb-14">
@@ -62,30 +65,37 @@
                         required
                         class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300"
                     >
+                    @error('email')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                   </div>
                   
                   <!-- Password -->
-                  <div x-data="{icon: false}">
-                  <div class="mb-5">
-                    <label for="password" class="block text-sm text-gray-600 mb-2">Password</label>
-                    <div class="relative">
-                        <input 
-                            type="password" 
-                            name="password" 
-                            placeholder="••••••••" 
-                            required
-                            class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300"
-                        >
-                          <button @click = "icon = !icon"
-                          type="button" 
-                          class="absolute right-4 top-1/2 transform -translate-y-1/2 text-yellow-500 text-2xl font-semibold cursor-pointer"
+                  <div x-data="{ showPassword: false }">
+                    <div class="mb-5">
+                      <label for="password" class="block text-sm text-gray-600 mb-2">Password</label>
+                      <div class="relative">
+                          <input 
+                              {{-- Tambahkan x-bind:type di sini --}}
+                              x-bind:type="showPassword ? 'text' : 'password'"
+                              name="password" 
+                              placeholder="••••••••" 
+                              required
+                              class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-300"
                           >
-                          <i x-bind:class="icon ? 'bx bx-show-alt' : 'bx bx-hide'"
-                           class=''></i>
-                        </button>
+                          <button @click="showPassword = !showPassword"
+                            type="button" 
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-yellow-500 text-2xl font-semibold cursor-pointer"
+                          >
+                            {{-- Ganti 'icon' menjadi 'showPassword' --}}
+                            <i x-bind:class="showPassword ? 'bx bx-show-alt' : 'bx bx-hide'" class=''></i>
+                          </button>
+                        </div>
+                        @error('password')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                       </div>
                     </div>
-                  </div>
                   
                   <!-- Phone Number -->
                   <div class="mb-5">
@@ -125,16 +135,28 @@
             <div class="mb-4">
                 <label for="login-password" class="block mb-2 text-gray-600">Password</label>
                 <div class="relative">
-                  <div x-data="{logicon: false}">
-                    <input name="pw" type="password" id="login-password" placeholder="••••••••" required
-                    class="w-full p-4 border border-gray-300 rounded-lg transition-all focus:border-yellow-500 focus:ring focus:ring-yellow-500/20">
-                    <button @click = "logicon = !logicon" type="button"
-                    class="absolute right-4 top-4 text-yellow-500 font-bold cursor-pointer hover:text-catering-red transition-colors text-2xl">
-                      <i x-bind:class="logicon ? 'bx bx-show-alt' : 'bx bx-hide'"
-                      class=''></i></button>
+                  <div x-data="{ showPassword: false }">
+                    <input 
+                        name="pw" 
+                        {{-- Tambahkan x-bind:type di sini --}}
+                        x-bind:type="showPassword ? 'text' : 'password'"
+                        id="login-password" 
+                        placeholder="••••••••" 
+                        required
+                        class="w-full p-4 border border-gray-300 rounded-lg transition-all focus:border-yellow-500 focus:ring focus:ring-yellow-500/20">
+                    <button @click="showPassword = !showPassword" type="button"
+                      class="absolute right-4 top-4 text-yellow-500 font-bold cursor-pointer hover:text-catering-red transition-colors text-2xl">
+                        {{-- Ganti 'logicon' menjadi 'showPassword' --}}
+                        <i x-bind:class="showPassword ? 'bx bx-show-alt' : 'bx bx-hide'" class=''></i>
+                    </button>
                     </div>
                   </div>
                 </div>
+              @if (session('loginError'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span class="block sm:inline">{{ session('loginError') }}</span>
+                </div>
+            @endif
             
             <button type="submit" class="w-full py-4 bg-yellow-500 text-white border-none rounded-lg text-base font-bold cursor-pointer mt-3 mb-4 transition-all duration-300 hover:bg-catering-red hover:shadow-lg transform hover:-translate-y-1">
                 MASUK

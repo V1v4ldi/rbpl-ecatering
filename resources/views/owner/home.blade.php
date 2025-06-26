@@ -9,16 +9,16 @@
         <!-- Date Selector -->
         <div class="bg-white rounded-lg shadow p-4 mb-6 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <button id="prevBtn" class="text-gray-600 hover:text-green-500 transition-colors" title="Previous Period">◀</button>
+                <button id="prevBtn" class="cursor-pointer text-gray-600 hover:text-green-500 transition-colors" title="Previous Period">◀</button>
                 <span id="dateDisplay" class="font-medium text-gray-800 min-w-[100px] text-center">Sedang Dimuat... <i class='bx bx-loader-alt animate-spin text-2xl text-gray-500'></i></span>
-                <button id="nextBtn" class="text-gray-600 hover:text-green-500 transition-colors" title="Next Period">▶</button>
+                <button id="nextBtn" class="cursor-pointer text-gray-600 hover:text-green-500 transition-colors" title="Next Period">▶</button>
             </div>
             <div class="flex gap-3">
                 <div class="flex gap-2">
-                    <button class="px-4 py-2 bg-green-500 text-white rounded font-medium transition-colors" id="monthlyBtn" aria-pressed="true">Bulanan</button>
-                    <button class="px-4 py-2 bg-white border border-gray-300 rounded transition-colors" id="yearlyBtn" aria-pressed="false">Tahunan</button>
+                    <button class="cursor-pointer px-4 py-2 bg-green-500 text-white rounded font-medium transition-colors" id="monthlyBtn" aria-pressed="true">Bulanan</button>
+                    <button class="cursor-pointer px-4 py-2 bg-white border border-gray-300 rounded transition-colors" id="yearlyBtn" aria-pressed="false">Tahunan</button>
                 </div>
-                <button class="px-4 py-2 bg-green-500 text-white rounded font-medium hover:bg-green-600 transition-colors" id="exportBtn" title="Export report as PDF">Export PDF</button>
+                <button class="cursor-pointer px-4 py-2 bg-green-500 text-white rounded font-medium hover:bg-green-600 transition-colors" id="exportBtn" title="Export report as PDF">Export PDF</button>
             </div>
         </div>
 
@@ -98,12 +98,12 @@
             <div class="p-5 flex justify-between items-center">
                 <div id="paginationInfo">Halaman 1 dari 4</div>
                 <div class="flex gap-2">
-                    <button id="prevPage" class="px-3 py-2 border border-gray-300 rounded" title="Previous page">←</button>
-                    <button class="pageBtn px-3 py-2 bg-green-500 text-white border border-green-500 rounded" data-page="1">1</button>
-                    <button class="pageBtn px-3 py-2 border border-gray-300 rounded" data-page="2">2</button>
-                    <button class="pageBtn px-3 py-2 border border-gray-300 rounded" data-page="3">3</button>
-                    <button class="pageBtn px-3 py-2 border border-gray-300 rounded" data-page="4">4</button>
-                    <button id="nextPage" class="px-3 py-2 border border-gray-300 rounded" title="Next page">→</button>
+                    <button id="prevPage" class="cursor-pointer px-3 py-2 border border-gray-300 rounded" title="Previous page">←</button>
+                    <button class="cursor-pointer pageBtn px-3 py-2 bg-green-500 text-white border border-green-500 rounded" data-page="1">1</button>
+                    <button class="cursor-pointer pageBtn px-3 py-2 border border-gray-300 rounded" data-page="2">2</button>
+                    <button class="cursor-pointer pageBtn px-3 py-2 border border-gray-300 rounded" data-page="3">3</button>
+                    <button class="cursor-pointer pageBtn px-3 py-2 border border-gray-300 rounded" data-page="4">4</button>
+                    <button id="nextPage" class="cursor-pointer px-3 py-2 border border-gray-300 rounded" title="Next page">→</button>
                 </div>
             </div>
         </div>

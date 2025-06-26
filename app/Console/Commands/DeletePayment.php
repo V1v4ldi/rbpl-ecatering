@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\order;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class DeletePayment extends Command
 {
@@ -27,8 +28,17 @@ class DeletePayment extends Command
      */
     public function handle()
     {
-        order::where('status_pesanan', 'Belum Dibayar')->where('created_at', '<', Carbon::now()->subHours(24))
+        $deletedCount = order::whereIn('status_pesanan', ['Belum Dibayar', 'Dibatalkan'])->where('created_at', '<', Carbon::now()->subHours(24))
         ->delete();
+
+        if ($deletedCount > 0) {
+            $this->info("Berhasil menghapus {$deletedCount} pesanan yang terbengkalai.");
+            // Catat ke file log Laravel
+            Log::info("Cron job: Berhasil menghapus {$deletedCount} pesanan yang terbengkalai.");
+        } else {
+            $this->info("Tidak ada pesanan terbengkalai yang perlu dihapus.");
+            Log::info("Cron job: Tidak ada pesanan terbengkalai yang perlu dihapus.");
+        }
 
         return 0;
     }

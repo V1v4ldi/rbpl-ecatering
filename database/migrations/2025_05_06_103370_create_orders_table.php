@@ -22,7 +22,9 @@ return new class extends Migration
             $table->string('alamat');
             $table->string('catatan');
             $table->unsignedInteger('jumlah');
-            $table->enum('status_pesanan', ['Belum Dibayar', 'Sedang Diverifikasi', 'Sudah Diverifikasi', 'Sedang Dibuat', 'Dalam Pengiriman', 'Selesai'])->default('Belum Dibayar');
+            $table->enum('payment_method', ['COD', 'Transfer'])->nullable();
+            $table->enum('status_pesanan', ['Dibatalkan', 'Belum Dibayar', 'Sedang Diverifikasi', 'Sudah Diverifikasi', 'Sedang Dibuat', 'Dalam Pengiriman', 'Selesai'])->default('Belum Dibayar');
+            $table->string('payment_proof_url')->nullable();
             $table->timestamps();
         });
     }

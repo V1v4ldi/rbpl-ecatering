@@ -26,5 +26,11 @@
       "src": "/(.*)",
       "dest": "/api/index.php"
     }
-  ]
+  ],
+   "crons": [
+      {
+          "path": "/api/run-cron",
+          "schedule": "0 5 * * *"
+      }
+    ]
 }

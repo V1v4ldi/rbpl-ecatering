@@ -12,6 +12,7 @@ export default defineConfig({
                     'resources/images/homepage.png',
                     'resources/images/icon.png',
                     'resources/images/logo.png',
+                    'resources/images/Login_image.png',
             ],
             refresh: true,
         }),

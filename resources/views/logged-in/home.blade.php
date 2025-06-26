@@ -25,6 +25,7 @@
         <a href="{{ route('order') }}" class="inline-block px-7 py-3 bg-[#ff9a00] text-white font-semibold rounded-lg transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5">Pesan</a>
     </section>
     @section('script')
+    @include('script.cart-item-get')
     @include('script.product-script')
     @stop
 </x-layout>

@@ -119,7 +119,7 @@ class Alluser extends Controller
     // API untuk Pesanan
     public function getOrders()
     {
-        $orders = order::with('customer')->whereIn('status_pesanan', ['Sudah Diverifikasi', 'Sedang Dibuat', 'Dalam Pengiriman'])->get();
+        $orders = order::with('customer')->whereIn('status_pesanan', ['Dibatalkan','Sudah Diverifikasi', 'Sedang Dibuat', 'Dalam Pengiriman'])->get();
 
         
         $total_verifed = 0;
@@ -177,7 +177,7 @@ class Alluser extends Controller
 
         // Validasi input JSON
         $validator = Validator::make($request->all(), [
-            'status' => 'required|string|in:Belum Dibayar,Sedang Diverifikasi,Sudah Diverifikasi,Sedang Dibuat,Dalam Pengiriman,Selesai',
+            'status' => 'required|string|in:Dibatalkan,Belum Dibayar,Sedang Diverifikasi,Sudah Diverifikasi,Sedang Dibuat,Dalam Pengiriman,Selesai',
         ]);
 
         if ($validator->fails()) {
@@ -283,27 +283,99 @@ class Alluser extends Controller
 */ 
      
     public function ownerhome()
-        {
-            return view('owner.home', ['title' => 'Home Owner']);     
+    {
+        return view('owner.home', ['title' => 'Home Owner']);     
+    }
+
+    public function ownerprofile()
+    {
+        return view('logged-in.profile', ['title' => 'Profile']);            
+    }
+
+    public function getLatestReportPeriod()
+    {
+        // Cari laporan terbaru berdasarkan kolom 'period'
+        $latestReport = Report::orderBy('period', 'desc')->first();
+
+        if ($latestReport) {
+            return response()->json([
+                'latest_period' => $latestReport->period, // e.g., "2025-07"
+                'latest_type' => $latestReport->type,     // e.g., "monthly"
+            ]);
         }
 
-        public function ownerprofile()
-        {
-            return view('logged-in.profile', ['title' => 'Profile']);            
-        }
+        // Fallback jika tidak ada laporan sama sekali di database
+        return response()->json([
+            'latest_period' => now()->format('Y-m'),
+            'latest_type' => 'monthly',
+        ]);
+    }
 
     public function getReport(string $type, string $period){
         $report = Report::with([
-                    'daily_report' => function ($query) {
-                        $query->orderBy('tanggal', 'asc');
-                    },
                     'daily_report.order.orderDetails.product',
                     'daily_report.order.customer'
                 ])
                 ->where('report_id', $period)
                 ->where('type', $type)
-                ->firstOrFail();
+                ->first();
 
+        if (!$report) {
+            return response()->json(['message' => 'Laporan tidak ditemukan untuk periode ini.'], 404);
+        }
+
+        // --- 1. Menghitung Perubahan Persentase ---
+        $previousPeriodId = null;
+        if ($type === 'monthly') {
+            $previousPeriodId = Carbon::parse($period . "-01")->subMonth()->format('Y-m');
+        } elseif ($type === 'yearly') {
+            $previousPeriodId = (int)$period - 1;
+        }
+
+        $previousReport = Report::where('report_id', $previousPeriodId)->where('type', $type)->first();
+
+        // Helper function untuk kalkulasi persen
+        $calculateChange = function ($current, $previous) {
+            if ($previous == 0) {
+                return $current > 0 ? 100 : 0; // Jika sebelumnya 0, anggap naik 100%
+            }
+            return round((($current - $previous) / $previous) * 100, 2);
+        };
+
+        $revenueChange = $previousReport ? $calculateChange($report->total_revenue, $previousReport->total_revenue) : null;
+        $orderChange = $previousReport ? $calculateChange($report->total_order, $previousReport->total_order) : null;
+        $avgOrderChange = $previousReport ? $calculateChange($report->average_order, $previousReport->average_order) : null;
+
+
+        // --- 2. Menentukan Menu Terlaris & Statistiknya ---
+        $productSales = [];
+        foreach ($report->daily_report as $daily) {
+            foreach ($daily->order->orderDetails as $detail) {
+                $productId = $detail->product_id;
+                if (!isset($productSales[$productId])) {
+                    $productSales[$productId] = [
+                        'name' => $detail->product->nama,
+                        'quantity' => 0
+                    ];
+                }
+                // Menambahkan jumlah dari order utama ke setiap item produk
+                $productSales[$productId]['quantity'] += $daily->order->jumlah;
+            }
+        }
+
+        // Urutkan untuk menemukan yang terlaris
+        uasort($productSales, fn($a, $b) => $b['quantity'] <=> $a['quantity']);
+        
+        $bestSellerName = "N/A";
+        $bestSellerStats = "Belum ada data";
+        if (!empty($productSales)) {
+            $bestSeller = array_key_first($productSales);
+            $bestSellerName = $productSales[$bestSeller]['name'];
+            $bestSellerStats = "Terjual " . $productSales[$bestSeller]['quantity'] . " Porsi";
+        }
+
+
+        // --- 3. Mempersiapkan Data Chart dan Tabel (Logika Anda yang sudah ada) ---
         $labels = [];
         $values = [];
         $displayPeriodForTitle = "";
@@ -311,51 +383,42 @@ class Alluser extends Controller
         if ($type === 'monthly') {
             $displayPeriodForTitle = Carbon::parse($report->period . "-01")->isoFormat('MMMM YYYY');
             $labels = $report->daily_report->map(fn($dr) => Carbon::parse($dr->tanggal)->format('d'))->toArray();
-            $values = $report->daily_report->map(fn($dr) => $dr->getOrderTotal())->toArray(); // Asumsi getOrderTotal() ada di model DailyReport
+            $values = $report->daily_report->map(fn($dr) => $dr->getOrderTotal())->toArray();
         } elseif ($type === 'yearly') {
             $displayPeriodForTitle = $report->period;
-            // Agregasi data harian menjadi bulanan untuk chart tahunan
             $monthlyAggregates = $report->daily_report
-                ->groupBy(fn($dr) => Carbon::parse($dr->tanggal)->format('Y-m')) // Grup per bulan "YYYY-MM"
+                ->groupBy(fn($dr) => Carbon::parse($dr->tanggal)->format('Y-m'))
                 ->map(fn($dailyReportsInMonth, $monthYearKey) => [
-                    'month_label' => Carbon::parse($monthYearKey . "-01")->isoFormat('MMM'), // "Jan", "Feb", ...
+                    'month_label' => Carbon::parse($monthYearKey . "-01")->isoFormat('MMM'),
                     'total' => $dailyReportsInMonth->sum(fn($dr) => $dr->getOrderTotal()),
-                    'sort_key' => $monthYearKey // Untuk sorting
+                    'sort_key' => $monthYearKey
                 ])
-                ->sortBy('sort_key'); // Urutkan berdasarkan bulan
+                ->sortBy('sort_key');
 
             $labels = $monthlyAggregates->pluck('month_label')->toArray();
             $values = $monthlyAggregates->pluck('total')->toArray();
         }
 
-        // Ambil 5 pesanan teratas (berdasarkan total pendapatan per daily_report)
-        $topOrdersData = $report->daily_report
-            ->sortByDesc(fn($dr) => $dr->getOrderTotal()) // Urutkan berdasarkan total pesanan
-            ->take(5)
+        $allOrdersData = $report->daily_report
+            ->sortByDesc(fn($dr) => $dr->getOrderTotal()) 
             ->map(fn($dr) => [
                 'id'       => $dr->order->order_id,
                 'date'     => Carbon::parse($dr->tanggal)->format('d/m/Y'),
-                'customer' => $dr->order->customer->name ?? 'N/A', // Pastikan customer di-load
-                'menu'     => $dr->order->orderDetails->pluck('product.nama')->implode(', '), // Implode nama produk
+                'customer' => $dr->order->customer->name ?? 'N/A',
+                'menu'     => $dr->order->orderDetails->pluck('product.nama')->implode(', '),
                 'subtotal' => $dr->order->orderDetails->sum('harga_now') * $dr->order->jumlah,
-                'discount' => $dr->order->diskon ?? 0, // Sesuaikan dengan field diskon Anda
+                'discount' => $dr->order->diskon ?? 0,
                 'total'    => $dr->getOrderTotal(),
                 'status'   => $dr->order->status_pesanan,
-            ])->values()->toArray(); // ->values() untuk memastikan array dengan indeks numerik
+            ])->values()->toArray();
 
-        // TODO: Implementasikan logika untuk menghitung persentase perubahan
-        $revenueChange = 0; // Placeholder
-        $orderChange = 0;   // Placeholder
-        $avgOrderChange = 0;// Placeholder
 
-        // TODO: Implementasikan logika untuk statistik best seller yang lebih detail jika diperlukan
-        $bestSellerStats = $report->best_seller ? "Menu terlaris: " . $report->best_seller : "Belum ada data";
-
+        // --- 4. Mengirimkan Respons JSON Lengkap ---
         return response()->json([
             'totalRevenue' => $report->total_revenue,
-            'totalOrders'  => $report->total_order, // Ini akan menjadi jumlah pesanan aktual jika observer diubah
+            'totalOrders'  => $report->total_order,
             'avgOrder'     => $report->average_order,
-            'bestSeller'   => $report->best_seller ?? "N/A",
+            'bestSeller'   => $bestSellerName,
             'bestSellerStats' => $bestSellerStats,
 
             'revenueChange'=> $revenueChange,
@@ -364,10 +427,10 @@ class Alluser extends Controller
 
             'labels'       => $labels,
             'values'       => $values,
-            'orders'       => $topOrdersData,
+            'orders'       => $allOrdersData,
 
             'displayPeriodForTitle' => $displayPeriodForTitle,
             'reportTypeForTitle' => ($type === 'monthly') ? 'Harian' : 'Bulanan',
         ]);
-        }
+    }
 }
