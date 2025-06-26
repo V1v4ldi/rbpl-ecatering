@@ -4,10 +4,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         if (typeof window.getcart === 'function') {
             await window.getcart();
+            window.cartLoaded = true;
             console.log('Cart loaded successfully, cart items:', window.cartItems);
         }
     } catch (error) {
         console.warn('Failed to load cart, but continuing with products:', error);
+        window.cartLoaded = true;
     }
 
     function handlePaginationClick(event) {
