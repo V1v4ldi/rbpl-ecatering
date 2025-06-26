@@ -152,6 +152,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
     
     // ✅ PANGGIL FUNCTION INI SAAT PERTAMA KALI LOAD
+    loadProducts(`{{ route('product.get') }}?page=1`);
     attachPaginationListeners();
 });
 </script>
