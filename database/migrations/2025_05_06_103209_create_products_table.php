@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('nama', length: 50);
             $table->unsignedInteger('harga');
             $table->text('deskripsi');
-            $table->string('imgname');
+            $table->string('image_url');
+            $table->string('public_id');
             $table->timestamps();
         });
     }

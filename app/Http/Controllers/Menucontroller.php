@@ -6,7 +6,7 @@ use App\Models\product;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Storage;
+use Cloudinary\Cloudinary;
 
 class Menucontroller extends Controller
 {
@@ -43,11 +43,16 @@ class Menucontroller extends Controller
             'nama' => 'required|string|max:50',
             'harga' => 'required',
             'deskripsi' => 'required',
-            'imgname' => 'required|image|mimes:jpg,jpeg,png,gif|max:10000',
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:10000',
         ]);
         
-        if($request->hasFile('imgname')){
-            $imgname = $request->file('imgname')->store(options: 'product');
+        if($request->hasFile('image')){
+            $cloudinary = new Cloudinary(env("CLOUDINARY_URL"));
+            $uploadApi =  $cloudinary->uploadApi();
+            $result = $uploadApi->upload($request->file('image')->getRealPath());
+
+            $url = $result['secure_url'];
+            $public_id = $result['public_id'];
         }
         else{
             return back()->with('UploadError', 'File Tidak Ditemukan');
@@ -57,7 +62,8 @@ class Menucontroller extends Controller
             'nama' => $request->nama,
             'harga' => $request->harga,
             'deskripsi' => $request->deskripsi,
-            'imgname' => $imgname,
+            'image_url' => $url,
+            'public_id' => $public_id,
         ]);
         return response()->json(['message' => 'Produk Berhasil Ditambahkan!']);
     }
@@ -100,7 +106,7 @@ class Menucontroller extends Controller
             'nama' => 'required|string|max:50',
             'harga' => 'required',
             'deskripsi' => 'required',
-            'imgname' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:10000',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:10000',
         ]);
 
         $product->nama = $request->nama;
@@ -108,13 +114,16 @@ class Menucontroller extends Controller
         $product->deskripsi = $request->deskripsi;
 
         // Update gambar jika ada file baru
-        if ($request->hasFile('imgname')) {
-            if ($product->imgname) {
-                Storage::delete('public/product/' . $product->imgname);
+        if ($request->hasFile('image')) {
+            $cloudinary = new Cloudinary(env('CLOUDINARY_URL'));
+            $uploadApi  = $cloudinary->uploadApi();
+            if ($product->image) {
+                $uploadApi->destroy($product->public_id);
             }
-            
-            $imgname = $request->file('imgname')->store(options: 'product');
-            $product->imgname = $imgname;
+            $result = $uploadApi->upload($request->file('image')->getRealPath());
+
+            $product->image_url = $result['secure_url'];
+            $product->public_id = $result['public_id'];
         }
 
         $product->save();
@@ -131,11 +140,14 @@ class Menucontroller extends Controller
 
         $product = product::where('product_id', $product_id)->firstOrfail();
 
-        if ($product->imgname) {
-            Storage::delete('public/product/' . $product->imgname);
+        if ($product->public_id) {
+            (new Cloudinary(env('CLOUDINARY_URL')))
+                ->uploadApi()
+                ->destroy($product->public_id);
         }
 
         $product->delete();
-        return response()->json(['message' => 'Produk Berhasil Dihapus!']);
+
+        return response()->json(['message' => 'Produk berhasil dihapus!']);
     }
 }

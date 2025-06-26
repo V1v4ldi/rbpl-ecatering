@@ -101,7 +101,7 @@
                     </div>
                     <div class="mb-4">
                         <label class="block text-sm font-base mb-2">Gambar</label>
-                        <input type="file" id="menuImgname" class="w-full border rounded px-3 py-2" name="imgname">
+                        <input type="file" id="menuImgname" class="w-full border rounded px-3 py-2" name="image">
                         <small id="menuImgnameHelp" class="text-gray-500">Kosongkan jika tidak ingin mengubah gambar (saat edit).</small>
                         <img id="currentMenuImage" src="" alt="Current Image" class="mt-2 max-h-20" style="display:none;"/>
                     </div>

@@ -104,7 +104,7 @@
                 products.forEach(product => {
                     const productHtml = `
                         <div class="overflow-hidden rounded-lg bg-gray-50 p-3 mb-2">
-                            <img src="/storage/product/${product.imgname}" alt="${product.nama}" class="rounded-[6px] w-full h-56 object-cover">
+                            <img src="${product.image_url}" alt="${product.nama}" class="rounded-[6px] w-full h-56 object-cover">
                             <div class="py-4">
                                 <h3 class="font-bold text-gray-800 text-lg">${product.nama}</h3>
                                 <p class="text-sm text-gray-600 mt-1">${product.deskripsi}</p>

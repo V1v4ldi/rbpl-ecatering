@@ -15,7 +15,9 @@ class product extends Model
         'nama',
         'deskripsi',
         'harga',
-        'imgname'];
+        'image_url',
+        'public_id',
+        ];
 
     public function order_detail(){
         return $this->hasMany(order_detail::class, 'product_id', 'product_id');
