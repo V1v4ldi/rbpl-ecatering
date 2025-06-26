@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             html += `
                 <div class="bg-white rounded-lg overflow-hidden shadow hover:-translate-y-1 transition-transform duration-300 p-2">
                     <div class="h-44 overflow-hidden">
-                        <img src="{{ asset('storage/product/') }}/${product.image_url}" alt="${product.nama}" class="w-full h-full rounded-[6px] object-cover">
+                        <img src="${product.image_url}" alt="${product.nama}" class="w-full h-full rounded-[6px] object-cover">
                     </div>
                     <div class="p-4">
                         <h3 class="font-semibold mb-1">${product.nama}</h3>
