@@ -1,0 +1,33 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-CW7fjLz9.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/images/Alogin.jpeg": {
+    "file": "assets/Alogin-CI8A8r0d.jpeg",
+    "src": "resources/images/Alogin.jpeg"
+  },
+  "resources/images/a-login.png": {
+    "file": "assets/a-login-DwOv7dL8.png",
+    "src": "resources/images/a-login.png"
+  },
+  "resources/images/homepage.png": {
+    "file": "assets/homepage-DHNikaX0.png",
+    "src": "resources/images/homepage.png"
+  },
+  "resources/images/icon.png": {
+    "file": "assets/icon-frCvU7fx.png",
+    "src": "resources/images/icon.png"
+  },
+  "resources/images/logo.png": {
+    "file": "assets/logo-CugkbX7w.png",
+    "src": "resources/images/logo.png"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CT2jHDKR.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}
