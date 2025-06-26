@@ -286,6 +286,9 @@
     let currentSelectedMonth = currentActualMonth; // 0-indexed
     let period = ''; // Akan di-set oleh updatePeriodString
 
+    let latestAvailableYear = currentActualYear;
+    let latestAvailableMonth = currentActualMonth;
+
     let allOrdersData = [];
     let currentPage = 1;
     const itemsPerPage = 5;
@@ -395,8 +398,8 @@
 
             // Disable/Enable tombol navigasi
             const $nextBtn = $('#nextBtn');
-            const isFuturePeriod = (view === 'monthly' && (currentSelectedYear > currentActualYear || (currentSelectedYear === currentActualYear && currentSelectedMonth >= currentActualMonth))) ||
-                                 (view === 'yearly' && currentSelectedYear >= currentActualYear);
+            const isFuturePeriod = (view === 'monthly' && (currentSelectedYear > latestAvailableYear || (currentSelectedYear === latestAvailableYear && currentSelectedMonth >= latestAvailableMonth))) ||
+                                 (view === 'yearly' && currentSelectedYear >= latestAvailableYear);
             $nextBtn.prop('disabled', isFuturePeriod).toggleClass('opacity-50 cursor-not-allowed', isFuturePeriod).toggleClass('hover:text-green-500 hover:bg-gray-100', !isFuturePeriod);
             // Anda bisa menambahkan logika untuk #prevBtn jika ada batasan historis
         })
@@ -419,9 +422,13 @@
                 const periodParts = data.latest_period.split('-');
                 currentSelectedYear = parseInt(periodParts[0], 10);
                 
+                // --- 2. SIMPAN PERIODE TERBARU YANG DIDAPAT DARI SERVER ---
+                latestAvailableYear = parseInt(periodParts[0], 10);
+                
                 view = data.latest_type;
                 if (view === 'monthly') {
                     currentSelectedMonth = parseInt(periodParts[1], 10) - 1; // -1 karena bulan 0-indexed
+                    latestAvailableMonth = currentSelectedMonth;
                 }
                 
                 // Update tampilan tombol (monthly/yearly)
